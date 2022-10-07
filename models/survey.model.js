@@ -1,4 +1,6 @@
+
 module.exports = (sequelize, Sequelize) => {
+
     const Survey = sequelize.define("survey", {
       surveyID: {
         type: Sequelize.INTEGER
@@ -7,10 +9,10 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.DATE
       },
       questionSet: {
-        type: Sequelize.ARRAY(DataTypes.INTEGER)
+        type: Sequelize.ARRAY(Sequelize.INTEGER)
       },
       responseSet: {
-        type: Sequelize.ARRAY(DataTypes.INTEGER)
+        type: Sequelize.ARRAY(Sequelize.INTEGER)
       }, 
       theme: {
         type: Sequelize.STRING
