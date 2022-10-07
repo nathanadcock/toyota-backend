@@ -18,11 +18,14 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 const db = require("./models");
-const Employee = db.employee;
+const Employee = db.employees;
 
 db.sequelize.sync({force: true}).then(() => {
   console.log('Drop and Resync Db');
-});
+})
+.catch(err => {
+  console.log(err.message);
+}) 
 
 // add routes in routes folder
 require('./routes/auth.routes')(app);
