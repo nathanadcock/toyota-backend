@@ -1,7 +1,7 @@
 const db = require("../models");
 const Employee = db.employees;
 
-checkDuplicateUsernameOrEmail = (req, res, next) => { 
+checkDuplicateEmail = (req, res, next) => { 
       // Email
       Employee.findOne({
         where: {
