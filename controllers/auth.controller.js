@@ -27,7 +27,7 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
-  console.log(req.body)
+  //console.log(req.body)
   Employee.findOne({
     where: {
         email: req.body.email
