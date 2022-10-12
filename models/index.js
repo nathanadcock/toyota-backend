@@ -34,7 +34,6 @@ db.questionsets = require("./questionset.model.js")(sequelize, Sequelize)
 db.employees.hasMany(db.surveys);
 db.surveys.belongsTo(db.employees, {
   foreignKey: {
-    name:"eID",
     allowNull: false
   }
 });
@@ -42,7 +41,6 @@ db.surveys.belongsTo(db.employees, {
 db.questions.hasMany(db.responses);
 db.responses.belongsTo(db.questions, {
   foreignKey: {
-    name:"qID",
     allowNull: false
   }
 });
@@ -50,15 +48,15 @@ db.responses.belongsTo(db.questions, {
 db.questionsets.hasMany(db.questions);
 db.questions.belongsTo(db.questionsets, {
   foreignKey: {
-    name:"qsID",
     allowNull: false
   }
 });
 
-db.surveys.hasOne(db.questionsets);
-db.questionsets.belongsToMany(db.surveys, {
-  through: "questionset_survey",
-  foreignKey: "sID",
+db.questionsets.hasMany(db.surveys);
+db.surveys.belongsTo(db.questionsets, {
+  foreignKey: {
+    allowNull: false
+  }
 });
 
 module.exports = db;
