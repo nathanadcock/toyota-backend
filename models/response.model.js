@@ -1,15 +1,28 @@
 module.exports = (sequelize, Sequelize) => {
     const Response = sequelize.define("response", {
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true
+      },
       response: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       optResponse: {
-        type: Sequelize.STRING
-      }, 
-      anonymous: {
-        type: Sequelize.BOOLEAN
+        type: Sequelize.STRING,
+        allowNull: false
       },
+      anonymous: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+      },
+      // questionID: {
+      //   type: Sequelize.INTEGER,
+      //   allowNull: false
+      // }
     });
-  
+
     return Response;
   };

@@ -1,7 +1,7 @@
 const db = require("../models");
-const Employee = db.employees;
+const Employee = db.employee;
 
-const checkDuplicateEmail = (req, res, next) => { 
+const checkDuplicateEmail = (req, res, next) => {
       // Email
       Employee.findOne({
         where: {
@@ -14,7 +14,7 @@ const checkDuplicateEmail = (req, res, next) => {
           });
           return;
         }
-  
+
         next();
       });
   };
@@ -22,5 +22,5 @@ const checkDuplicateEmail = (req, res, next) => {
   const verifySignUp = {
     checkDuplicateEmail: checkDuplicateEmail
   };
-  
+
   module.exports = verifySignUp;

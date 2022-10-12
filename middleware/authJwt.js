@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 const db = require("../models");
-const Employee = db.employees;
+const Employee = db.employee;
 
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
@@ -31,7 +31,7 @@ isRegular = (req, res, next) => {
 
       res.status(403).send({
         message: "Require Regular Role!"
-      
+
     });
   })
   .catch(err => {
@@ -45,7 +45,7 @@ isContractor = (req, res, next) => {
 
       res.status(403).send({
         message: "Require Moderator Role!"
-      
+
     });
   })
   .catch(err => {

@@ -1,18 +1,20 @@
 module.exports = (sequelize, Sequelize) => {
     const Question = sequelize.define("question", {
-      questionID: {
-        type: Sequelize.INTEGER
-      },
-      theme: {
-        type: Sequelize.STRING
+      id: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        primaryKey: true,
+        autoIncrement: true
       },
       employmentRole: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       },
       question: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false
       }
     });
-  
+
     return Question;
   };
