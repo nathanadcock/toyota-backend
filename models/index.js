@@ -61,6 +61,4 @@ db.questionsets.belongsToMany(db.surveys, {
   foreignKey: "sID",
 });
 
-
-
 module.exports = db;

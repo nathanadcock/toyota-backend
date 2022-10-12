@@ -34,6 +34,7 @@ app.listen(PORT, () => {
 const db = require("./models");
 const Response = db.responses;
 const Question = db.questions;
+const QuestionSet = db.questionsets
 
 //sync to database
 db.sequelize.sync({force: true}).then(() => {
@@ -44,7 +45,9 @@ db.sequelize.sync({force: true}).then(() => {
     console.log("database successfully authenticated!")
 
     //this is just a test to create a row in the reponses table
-    Question.create({employmentRole: 'Manager', question: "whats up?"}).then().catch(err => {})
+    QuestionSet.create({theme: 'something'}).then().catch(err => {})
+
+    Question.create({employmentRole: 'Manager', question: "whats up?", qsID: 1}).then().catch(err => {})
 
     Response.create({response: '2', optResponse: 'nothing', anonymous: true, qID: 1})
     .then(
