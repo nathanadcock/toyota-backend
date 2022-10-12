@@ -2,6 +2,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+var bcrypt = require("bcryptjs");
 
 const app = express();
 
@@ -35,6 +36,7 @@ const db = require("./models");
 const Response = db.responses;
 const Question = db.questions;
 const QuestionSet = db.questionsets
+const Employee = db.employees
 
 //sync to database
 db.sequelize.sync({force: true}).then(() => {
@@ -43,7 +45,8 @@ db.sequelize.sync({force: true}).then(() => {
   //authenticate db
   db.sequelize.authenticate().then(() => {
     console.log("database successfully authenticated!")
-
+  })
+  .then(() => {
     //this is just a test to create a row in the reponses table
     QuestionSet.create({theme: 'something'}).then(() => {
       return Question.create({employmentRole: 'Manager', question: "whats up?", qsID: 1})
@@ -55,6 +58,8 @@ db.sequelize.sync({force: true}).then(() => {
       return Response.create({response: '2', optResponse: 'nothing', anonymous: true, qID: 1})
     })
     .catch(err => {})
+
+    Employee.create({firstName: 'Nathan', lastName: 'Adcock', email: "nate@gmail.com", managerID: 25, employmentRole: "Manager", departmentID: 45, password: bcrypt.hashSync('pass', 8)})
   })
   .catch(err => {
     console.log(err.message);

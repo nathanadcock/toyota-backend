@@ -31,6 +31,8 @@ db.questions = require("./question.model.js")(sequelize, Sequelize)
 db.responses = require("./response.model.js")(sequelize, Sequelize)
 db.questionsets = require("./questionset.model.js")(sequelize, Sequelize)
 db.responsesets = require("./responseset.model.js")(sequelize, Sequelize)
+db.pendingsurveys = require("./pendingsurvey.model.js")(sequelize, Sequelize)
+db.themes = require("./theme.model.js")(sequelize, Sequelize)
 
 db.employees.hasMany(db.surveys);
 db.surveys.belongsTo(db.employees, {
@@ -38,6 +40,13 @@ db.surveys.belongsTo(db.employees, {
     allowNull: false
   }
 });
+
+db.themes.hasMany(db.questionsets);
+db.questionsets.belongsTo(db.themes, {
+  foreignKey: {
+    allowNull: false
+  }
+})
 
 db.questionsets.hasMany(db.questions);
 db.questions.belongsTo(db.questionsets, {
@@ -65,7 +74,10 @@ db.responsesets.belongsTo(db.questionsets, {
   foreignKey: {
     allowNull: false
   }
-})
+});
+
+db.employees.belongsToMany(db.questionsets, { through: 'pending_surveys' });
+db.questionsets.belongsToMany(db.employees, { through: 'pending_surveys' });
 
 db.surveys.hasOne(db.responsesets);
 db.responsesets.belongsTo(db.surveys);
