@@ -6,7 +6,7 @@ const cors = require("cors");
 const app = express();
 
 var corsOptions = {
-  origin: "http://localhost:8081"
+  origin: "http://localhost:4200"
 };
 
 app.use(cors(corsOptions));
@@ -39,31 +39,26 @@ const QuestionSet = db.questionsets
 //sync to database
 db.sequelize.sync({force: true}).then(() => {
   console.log('Drop and Resync Db');
-
+}).then(() => {
   //authenticate db
   db.sequelize.authenticate().then(() => {
     console.log("database successfully authenticated!")
 
     //this is just a test to create a row in the reponses table
-    QuestionSet.create({theme: 'something'}).then().catch(err => {})
-
-    Question.create({employmentRole: 'Manager', question: "whats up?", qsID: 1}).then().catch(err => {})
-
-    Response.create({response: '2', optResponse: 'nothing', anonymous: true, qID: 1})
-    .then(
-      console.log("success")
-    )
-    .catch(err => {
-      console.log("oops")
+    QuestionSet.create({theme: 'something'}).then(() => {
+      return Question.create({employmentRole: 'Manager', question: "whats up?", qsID: 1})
     })
+    .then(() => {
+      return Question.create({employmentRole: 'Manager', question: "whats up?", qsID: 1})
+    })
+    .then(() => {
+      return Response.create({response: '2', optResponse: 'nothing', anonymous: true, qID: 1})
+    })
+    .catch(err => {})
   })
   .catch(err => {
-    console.log(err.message)
+    console.log(err.message);
   })
-
-})
-.catch(err => {
-  console.log(err.message);
 })
 
 

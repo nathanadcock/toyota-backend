@@ -1,6 +1,6 @@
 const db = require("../models");
 const config = require("../config/auth.config");
-const Employee = db.employee;
+const Employee = db.employees;
 
 const Op = db.Sequelize.Op;
 
@@ -10,7 +10,6 @@ var bcrypt = require("bcryptjs");
 exports.signup = (req, res) => {
   // Save Employee to Database, will probably need to update this code, not sure how registration process will work
   Employee.create({
-    employeeID: req.body.employeeID, //this will be auto generated somehow, will change this
     firstName: req.body.firstName,
     lastName: req.body.lastName,
     email: req.body.email,
@@ -28,9 +27,10 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
+  console.log(req.body)
   Employee.findOne({
     where: {
-        employeeID: req.body.employeeID
+        email: req.body.email
     }
   })
     .then(user => {
