@@ -34,6 +34,7 @@ db.responsesets = require("./responseset.model.js")(sequelize, Sequelize)
 db.pendingsurveys = require("./pendingsurvey.model.js")(sequelize, Sequelize)
 db.themes = require("./theme.model.js")(sequelize, Sequelize)
 
+//all associations are defined below
 db.employees.hasMany(db.surveys);
 db.surveys.belongsTo(db.employees, {
   foreignKey: {
@@ -65,7 +66,7 @@ db.surveys.belongsTo(db.questionsets, {
 db.questions.hasMany(db.responses);
 db.responses.belongsTo(db.questions, {
   foreignKey: {
-    allowNull: false
+    allowNull: true
   }
 });
 

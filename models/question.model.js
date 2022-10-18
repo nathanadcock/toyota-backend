@@ -45,7 +45,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       options: {
         type: Sequelize.JSON,
-        default: optionsJSON,
+        defaultValue: optionsJSON,
         allowNull: false
       }
     });

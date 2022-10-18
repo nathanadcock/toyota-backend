@@ -1,8 +1,9 @@
 const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 const db = require("../models");
-const Employee = db.employee;
+const Employee = db.employees;
 
+//self-explanatory but this method verifies the token passed in from the client for security
 verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
 

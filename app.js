@@ -37,6 +37,7 @@ const Response = db.responses;
 const Question = db.questions;
 const QuestionSet = db.questionsets
 const Employee = db.employees
+const Theme = db.themes;
 
 //sync to database
 db.sequelize.sync({force: true}).then(() => {
@@ -48,16 +49,12 @@ db.sequelize.sync({force: true}).then(() => {
   })
   .then(() => {
     //this is just a test to create a row in the reponses table
-    QuestionSet.create({theme: 'something'}).then(() => {
-      return Question.create({employmentRole: 'Manager', question: "whats up?", qsID: 1})
-    })
-    .then(() => {
-      return Question.create({employmentRole: 'Manager', question: "whats up?", qsID: 1})
-    })
-    .then(() => {
-      return Response.create({response: '2', optResponse: 'nothing', anonymous: true, qID: 1})
-    })
-    .catch(err => {})
+    Theme.create({name: 'something'})
+    QuestionSet.create({themeId: 1})
+    Question.create({employmentRole: 'Manager', question: "You are motivated by your organization's values.", questionsetId: 1})
+    Question.create({employmentRole: 'Manager', question: "Your organization is involved in its community.", questionsetId: 1})
+    Question.create({employmentRole: 'Manager', question: "Your organization allows you to provide feedback.", questionsetId: 1})
+    Response.create({response: '2', optResponse: 'nothing', anonymous: true, qID: 1})
 
     Employee.create({firstName: 'Nathan', lastName: 'Adcock', email: "nate@gmail.com", managerID: 25, employmentRole: "Manager", departmentID: 45, password: bcrypt.hashSync('pass', 8)})
   })
