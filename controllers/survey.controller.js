@@ -36,14 +36,14 @@ exports.fetchSurvey = (req, res) => {
   .then((questions) => {
     for(let index = 0; index < questions.length; index++) {
       let question = questions[index]
-      let optionsObj = {options: []}
+      let optionsObj = []
 
       for(let index2 = 0; index2 < question.dataValues.value.length; index2++) {
         let optionsElement = {
           value: question.dataValues.value[index2],
           label: question.dataValues.label[index2]
         }
-        optionsObj.options.push(optionsElement);
+        optionsObj.push(optionsElement);
       }
 
       finalObject.questionSet.push({question: question.dataValues.question, options: optionsObj})
