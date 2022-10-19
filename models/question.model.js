@@ -46,7 +46,10 @@ module.exports = (sequelize, Sequelize) => {
       options: {
         type: Sequelize.JSON,
         defaultValue: optionsJSON,
-        allowNull: false
+        allowNull: false,
+        get() {
+          return JSON.parse(this.getDataValue("options"));
+        }
       }
     });
 
