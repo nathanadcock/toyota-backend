@@ -1,31 +1,60 @@
 const db = require("../models");
 const Employee = db.employees;
-const Survey = db.surveys;
 const QuestionSet = db.questionsets;
 const Question = db.questions;
-const ResponeSet = db.responsesets;
-const Resp = db.responses;
 
 const Op = db.Sequelize.Op;
 
-var jwt = require("jsonwebtoken");
-var bcrypt = require("bcryptjs");
-
 exports.fetchSurvey = (req, res) => {
-  // Save Employee to Database, will probably need to update this code, not sure how registration process will work
-  Employee.create({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    managerID: req.body.managerID,
-    employmentRole: req.body.employmentRole,
-    departmentID: req.body.departmentID,
-    password: bcrypt.hashSync(req.body.password, 8)
+  // fetch pending survey for user
+  let finalObject = {
+    questionSet: [],
+    questionResponses: [],
+    currentQuestionIndex: 0,
+    endPageVisibility: false,
+    anonymousResponses: false,
+  }
+
+  QuestionSet.findAll({
+    attributes: ['id'],
+    include: [{
+      attributes: ['id'],
+      model: Employee,
+      where: {id: req.params.id},
+      required: true
+    }]
   })
-    .then(user => {
-        res.send({ message: "Employee was registered successfully!" });
-    })
-    .catch(err => {
-      res.status(500).send({ message: err.message });
-    });
+  .then((pendingSurveys) => {
+    for(let i = 0; i < pendingSurveys.length; i++) {
+      let qsId = pendingSurveys[i].dataValues.id
+
+      Question.findAll({
+        attributes: ['question', 'options'],
+        include: [{
+          attributes: ['id'],
+          model: QuestionSet,
+          where: {id: qsId},
+          required: true
+        }]
+      })
+      .then((questions) => {
+        for(let index = 0; index < questions.length; index++) {
+          let question = questions[index]
+          finalObject.questionSet.push({question: question.dataValues.question, options: question.dataValues.options})
+          finalObject.questionResponses.push({selectedOptionValue: undefined, userInputText: ''})
+        }
+
+        return finalObject;
+      })
+      .then((obj) => {
+        res.status(200).send(obj);
+      })
+      .catch((error) => {
+        console.log(error)
+      })
+    }
+  })
+  .catch((error) => {
+    console.log(error)
+  })
 };

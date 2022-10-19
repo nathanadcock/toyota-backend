@@ -47,7 +47,7 @@ db.questionsets.belongsTo(db.themes, {
   foreignKey: {
     allowNull: false
   }
-})
+});
 
 db.questionsets.hasMany(db.questions);
 db.questions.belongsTo(db.questionsets, {
@@ -77,8 +77,8 @@ db.responsesets.belongsTo(db.questionsets, {
   }
 });
 
-db.employees.belongsToMany(db.questionsets, { through: 'pending_surveys' });
-db.questionsets.belongsToMany(db.employees, { through: 'pending_surveys' });
+db.employees.belongsToMany(db.questionsets, { through: db.pendingsurveys });
+db.questionsets.belongsToMany(db.employees, { through: db.pendingsurveys });
 
 db.surveys.hasOne(db.responsesets);
 db.responsesets.belongsTo(db.surveys);

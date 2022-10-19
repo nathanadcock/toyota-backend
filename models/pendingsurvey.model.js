@@ -1,5 +1,5 @@
 module.exports = (sequelize, Sequelize) => {
-  const PendingSurvey = sequelize.define("pendingsurvey", {
+  const PendingSurvey = sequelize.define("pending_survey", {
     id: {
       type: Sequelize.INTEGER,
       allowNull: false,

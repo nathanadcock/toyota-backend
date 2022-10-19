@@ -18,8 +18,9 @@ app.use(bodyParser.json());
 // parse requests of content-type - application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// add routes in routes folder
+// add routes from routes folder
 require('./routes/auth.routes')(app);
+require('./routes/survey.routes')(app);
 
 // simple route
 app.get("/", (req, res) => {
@@ -35,28 +36,39 @@ app.listen(PORT, () => {
 const db = require("./models");
 const Response = db.responses;
 const Question = db.questions;
-const QuestionSet = db.questionsets
-const Employee = db.employees
+const QuestionSet = db.questionsets;
+const Employee = db.employees;
 const Theme = db.themes;
+const PendingSurvey = db.pendingsurveys;
 
 //sync to database
-db.sequelize.sync({force: true}).then(() => {
+db.sequelize.sync({force: true})
+  .then(() => {
   console.log('Drop and Resync Db');
-}).then(() => {
+  })
+  .then(() => {
   //authenticate db
-  db.sequelize.authenticate().then(() => {
+    return db.sequelize.authenticate()
+  })
+  .then(() => {
     console.log("database successfully authenticated!")
   })
   .then(() => {
-    //this is just a test to create a row in the reponses table
-    Theme.create({name: 'something'})
-    QuestionSet.create({themeId: 1})
+    return Theme.create({name: 'something'})
+  .then(() => {
+    return QuestionSet.create({themeId: 1})
+  })
+  .then(() => {
     Question.create({employmentRole: 'Manager', question: "You are motivated by your organization's values.", questionsetId: 1})
     Question.create({employmentRole: 'Manager', question: "Your organization is involved in its community.", questionsetId: 1})
-    Question.create({employmentRole: 'Manager', question: "Your organization allows you to provide feedback.", questionsetId: 1})
-    Response.create({response: '2', optResponse: 'nothing', anonymous: true, qID: 1})
-
-    Employee.create({firstName: 'Nathan', lastName: 'Adcock', email: "nate@gmail.com", managerID: 25, employmentRole: "Manager", departmentID: 45, password: bcrypt.hashSync('pass', 8)})
+    return Question.create({employmentRole: 'Manager', question: "Your organization allows you to provide feedback.", questionsetId: 1})
+  })
+  .then(() => {
+    Response.create({response: '2', optResponse: 'nothing', anonymous: true, questionId: 1})
+    return Employee.create({firstName: 'Nathan', lastName: 'Adcock', email: "nate@gmail.com", managerId: 25, employmentRole: "Manager", departmentID: 45, password: bcrypt.hashSync('pass', 8)})
+  })
+  .then(() => {
+    return PendingSurvey.create({employeeId: 1, questionsetId: 1})
   })
   .catch(err => {
     console.log(err.message);

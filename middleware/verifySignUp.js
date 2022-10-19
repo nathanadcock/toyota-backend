@@ -1,5 +1,5 @@
 const db = require("../models");
-const Employee = db.employee;
+const Employee = db.employees;
 
 const checkDuplicateEmail = (req, res, next) => {
       // Email
