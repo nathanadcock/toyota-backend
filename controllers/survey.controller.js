@@ -8,14 +8,10 @@ const Op = db.Sequelize.Op;
 exports.fetchSurvey = (req, res) => {
   // fetch pending survey for user
   let finalObject = {
-    questionSet: [],
-    questionResponses: [],
-    currentQuestionIndex: 0,
-    endPageVisibility: false,
-    anonymousResponses: false,
+    questionSet: []
   }
 
-  QuestionSet.findAll({
+  QuestionSet.findOne({
     attributes: ['id'],
     include: [{
       attributes: ['id'],
@@ -24,12 +20,11 @@ exports.fetchSurvey = (req, res) => {
       required: true
     }]
   })
-  .then((pendingSurveys) => {
-    for(let i = 0; i < pendingSurveys.length; i++) {
-      let qsId = pendingSurveys[i].dataValues.id
+  .then((pendingSurvey) => {
+      let qsId = pendingSurvey.dataValues.id
 
-      Question.findAll({
-        attributes: ['question', 'options'],
+      return Question.findAll({
+        attributes: ['question', 'value', 'label'],
         include: [{
           attributes: ['id'],
           model: QuestionSet,
@@ -37,22 +32,27 @@ exports.fetchSurvey = (req, res) => {
           required: true
         }]
       })
-      .then((questions) => {
-        for(let index = 0; index < questions.length; index++) {
-          let question = questions[index]
-          finalObject.questionSet.push({question: question.dataValues.question, options: question.dataValues.options})
-          finalObject.questionResponses.push({selectedOptionValue: undefined, userInputText: ''})
-        }
+  })
+  .then((questions) => {
+    for(let index = 0; index < questions.length; index++) {
+      let question = questions[index]
+      let optionsObj = {options: []}
 
-        return finalObject;
-      })
-      .then((obj) => {
-        res.status(200).send(obj);
-      })
-      .catch((error) => {
-        console.log(error)
-      })
+      for(let index2 = 0; index2 < question.dataValues.value.length; index2++) {
+        let optionsElement = {
+          value: question.dataValues.value[index2],
+          label: question.dataValues.label[index2]
+        }
+        optionsObj.options.push(optionsElement);
+      }
+
+      finalObject.questionSet.push({question: question.dataValues.question, options: optionsObj})
     }
+
+    return finalObject;
+  })
+  .then((obj) => {
+    res.status(200).send(obj);
   })
   .catch((error) => {
     console.log(error)
