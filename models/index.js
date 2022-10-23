@@ -63,6 +63,13 @@ db.surveys.belongsTo(db.questionsets, {
   }
 });
 
+db.responsesets.hasMany(db.responses);
+db.responses.belongsTo(db.responsesets, {
+  foreignKey: {
+    allowNull: true
+  }
+});
+
 db.questions.hasMany(db.responses);
 db.responses.belongsTo(db.questions, {
   foreignKey: {
@@ -81,6 +88,10 @@ db.employees.belongsToMany(db.questionsets, { through: db.pendingsurveys });
 db.questionsets.belongsToMany(db.employees, { through: db.pendingsurveys });
 
 db.surveys.hasOne(db.responsesets);
-db.responsesets.belongsTo(db.surveys);
+db.responsesets.belongsTo(db.surveys, {
+  foreignKey: {
+    allowNull: false
+  }
+});
 
 module.exports = db;

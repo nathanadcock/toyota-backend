@@ -15,4 +15,10 @@ module.exports = function(app) {
     [authJwt.verifyToken],
     controller.fetchSurvey
   );
+
+  app.post(
+    "/api/survey/submitsurvey",
+    [authJwt.verifyToken],
+    controller.storeSurveyResults
+  );
 };

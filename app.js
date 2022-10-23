@@ -44,55 +44,22 @@ const PendingSurvey = db.pendingsurveys;
 //sync to database
 db.sequelize.sync({force: true})
   .then(() => {
-  console.log('Drop and Resync Db');
-  })
-  .then(() => {
+    console.log('Drop and Resync Db');
   //authenticate db
     return db.sequelize.authenticate()
   })
   .then(() => {
     console.log("database successfully authenticated!")
-  })
-  .then(() => {
     return Theme.create({name: 'something'})
   .then(() => {
     return QuestionSet.create({themeId: 1})
   })
   .then(() => {
-    const optionsObj = [
-      {
-        value: '1',
-        label: 'Strongly Disagree',
-      },
-      {
-        value: '2',
-        label: 'Disagree',
-      },
-      {
-        value: '3',
-        label: 'Somewhat Disagree',
-      },
-      {
-        value: '4',
-        label: 'Somewhat Agree',
-      },
-      {
-        value: '5',
-        label: 'Agree',
-      },
-      {
-        value: '6',
-        label: 'Strongly Agree',
-      },
-    ];
-
-    optionsJSON = JSON.stringify(optionsObj)
     Question.create({employmentRole: 'Manager', question: "You are motivated by your organization's values.", questionsetId: 1})
     Question.create({employmentRole: 'Manager', question: "Your organization is involved in its community.", questionsetId: 1})
     return Question.create({employmentRole: 'Manager', question: "Your organization allows you to provide feedback.", questionsetId: 1})
   })
   .then(() => {
-    Response.create({response: '2', optResponse: 'nothing', anonymous: true, questionId: 1})
     return Employee.create({firstName: 'Nathan', lastName: 'Adcock', email: "nate@gmail.com", managerId: 25, employmentRole: "Manager", departmentID: 45, password: bcrypt.hashSync('pass', 8)})
   })
   .then(() => {
