@@ -39,20 +39,12 @@ module.exports = (sequelize, Sequelize) => {
       },
       employmentRole: {
         type: Sequelize.STRING,
-        //allowNull: false
+        allowNull: true
       },
       question: {
         type: Sequelize.STRING,
         allowNull: false
       },
-      // options: {
-      //   type: Sequelize.JSON,
-      //   defaultValue: optionsJSON,
-      //   allowNull: false,
-      //   get() {
-      //     return JSON.parse(this.getDataValue("options"));
-      //   }
-      // }
       value: {
         type: DataTypes.ARRAY(DataTypes.STRING),
         defaultValue: ['1', '2', '3', '4'],
