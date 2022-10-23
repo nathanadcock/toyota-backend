@@ -3,7 +3,7 @@ const config = require("../config/auth.config.js");
 const db = require("../models");
 const Employee = db.employees;
 
-//self-explanatory but this method verifies the token passed in from the client for security
+//self-explanatory but this method verifies the token provided by from client
 const verifyToken = (req, res, next) => {
   let token = req.headers["x-access-token"];
 
@@ -27,7 +27,8 @@ const verifyToken = (req, res, next) => {
 //these two methods will probably be changed, will probably just needa method that returns the employee role, however, this code might need to be used
 //on the dashboard to prevent non-admins from accessing data they shouldn't be able to access, so keep this here for that just in case
 const isRegular = (req, res, next) => {
-  Employee.findByPk(req.userId).then(user => {
+  Employee.findByPk(req.userId)
+  .then(user => {
     if(user.empoloymentRoll !== "Regular")
 
       res.status(403).send({
@@ -41,7 +42,8 @@ const isRegular = (req, res, next) => {
 };
 
 const isContractor = (req, res, next) => {
-  Employee.findByPk(req.employeeID).then(user => {
+  Employee.findByPk(req.employeeID)
+  .then(user => {
     if(user.empoloymentRoll !== "Contractor")
 
       res.status(403).send({

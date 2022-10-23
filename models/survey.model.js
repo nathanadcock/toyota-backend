@@ -8,10 +8,6 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true,
         autoIncrement: true
       },
-      dateSubmitted: {
-        type: Sequelize.DATE,
-        allowNull: false
-      },
     });
 
     return Survey;

@@ -1,34 +1,6 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (sequelize, Sequelize) => {
-    const optionsObj = [
-      {
-        value: '1',
-        label: 'Strongly Disagree',
-      },
-      {
-        value: '2',
-        label: 'Disagree',
-      },
-      {
-        value: '3',
-        label: 'Somewhat Disagree',
-      },
-      {
-        value: '4',
-        label: 'Somewhat Agree',
-      },
-      {
-        value: '5',
-        label: 'Agree',
-      },
-      {
-        value: '6',
-        label: 'Strongly Agree',
-      },
-    ];
-
-    const optionsJSON = JSON.stringify(optionsObj);
 
     const Question = sequelize.define("question", {
       id: {
@@ -39,7 +11,11 @@ module.exports = (sequelize, Sequelize) => {
       },
       employmentRole: {
         type: Sequelize.STRING,
+<<<<<<< HEAD
         allowNull: true
+=======
+        allowNull: false
+>>>>>>> f5fa73579e9155e83175ad0de6c568e608ca8186
       },
       question: {
         type: Sequelize.STRING,
