@@ -60,11 +60,7 @@ db.sequelize.sync({force: true})
     return Question.create({employmentRole: 'Manager', question: "Your organization allows you to provide feedback.", questionsetId: 1})
   })
   .then(() => {
-<<<<<<< HEAD
-    Response.create({response: '2', optResponse: 'nothing', anonymous: true, questionId: 1})
     Employee.create({firstName: 'Bob', lastName: 'Bob', email: "bob@gmail.com", managerId: 10, employmentRole: "Contractor", departmentID: 20, password: bcrypt.hashSync('testpass123!', 8)})
-=======
->>>>>>> f5fa73579e9155e83175ad0de6c568e608ca8186
     return Employee.create({firstName: 'Nathan', lastName: 'Adcock', email: "nate@gmail.com", managerId: 25, employmentRole: "Manager", departmentID: 45, password: bcrypt.hashSync('pass', 8)})
   })
   .then(() => {

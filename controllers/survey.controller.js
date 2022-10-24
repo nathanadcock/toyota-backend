@@ -120,12 +120,12 @@ exports.storeSurveyResults = (req, res) => {
   .then((questions) => {
     // loop through responses and store them in database
     let promiseList = [];
+    let anonymous = req.body.anonymous;
     for(let index = 0; index < questions.length; index++) {
       let questionReceived = questions[index].dataValues;
       let questionId = questionReceived.id;
       let response = req.body.userResponses[index].selectedOptionValue;
       let optionalResponse = req.body.userResponses[index].userInputText;
-      let anonymous = req.body.anonymous;
 
       let promise = Resp.create({
         response: response,

@@ -11,11 +11,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       employmentRole: {
         type: Sequelize.STRING,
-<<<<<<< HEAD
-        allowNull: true
-=======
         allowNull: false
->>>>>>> f5fa73579e9155e83175ad0de6c568e608ca8186
       },
       question: {
         type: Sequelize.STRING,
