@@ -21,7 +21,7 @@ exports.fetchSurvey = (req, res) => {
       required: true
     }],
     order: [
-      ['id', 'DESC']
+      ['id', 'ASC']
     ],
   })
   .then((pendingSurvey) => {
@@ -37,7 +37,7 @@ exports.fetchSurvey = (req, res) => {
         required: true
       }],
       order: [
-        ['id', 'DESC']
+        ['id', 'ASC']
       ],
     })
   })
@@ -80,7 +80,7 @@ exports.storeSurveyResults = (req, res) => {
       required: true
     }],
     order: [
-      ['id', 'DESC']
+      ['id', 'ASC']
     ],
   })
   .then((completedQuestionSet) => {
@@ -113,7 +113,7 @@ exports.storeSurveyResults = (req, res) => {
         required: true
       }],
       order: [
-        ['id', 'DESC']
+        ['id', 'ASC']
       ],
     })
   })

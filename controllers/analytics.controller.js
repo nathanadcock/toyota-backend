@@ -2,11 +2,14 @@ const db = require("../models");
 const Employee = db.employees;
 const QuestionSet = db.questionsets;
 const Question = db.questions;
+const Resp = db.responses;
 const Op = db.Sequelize.Op;
 
 // fetch pending survey for user
 exports.fetchQuestionSetData = (req, res) => {
 
+  let questionSetData = [];
+  let questions;
   // get pending survey, if any, for user
   QuestionSet.findOne({
     attributes: ['id', 'name'],
@@ -27,13 +30,28 @@ exports.fetchQuestionSetData = (req, res) => {
         required: true
       }],
       order: [
-        ['id', 'DESC']
+        ['id', 'ASC']
       ],
     })
   })
+  .then((questionsObj) => {
+    questions = questionsObj;
+    let promiseList = [];
+    for(let index = 0; index < questionsObj.length; index++) {
+      let questionReceived = questionsObj[index].dataValues;
+      let questionId = questionReceived.id;
+
+      let promise = Resp.findAll({
+        attributes: ['id', 'response', 'optResponse', 'anonymous'],
+        where: {questionId: questionId},
+      });
+
+      promiseList.push(promise);
+    }
+    return promiseList;
+  })
   // this then() formats all of the questions and their values and labels, and puts it all in an array (questionSet) and sends the array to the client
-  .then((questions) => {
-    let questionSet = [];
+  .then((responses) => {
     for(let index = 0; index < questions.length; index++) {
       let questionReceived = questions[index].dataValues;
       let optionsArr = [];
@@ -42,13 +60,14 @@ exports.fetchQuestionSetData = (req, res) => {
       for(let indexInnerLoop = 0; indexInnerLoop < innerLoopLength; indexInnerLoop++) {
         let optionsElement = {
           value: questionReceived.value[indexInnerLoop],
-          label: questionReceived.label[indexInnerLoop]
+          label: questionReceived.label[indexInnerLoop],
+          response: [],
         };
         optionsArr.push(optionsElement);
       }
-      questionSet.push({question: questionReceived.question, options: optionsArr});
+      questionSetData.push({question: questionReceived.question, options: optionsArr});
     }
-    res.status(200).send(questionSet);
+    res.status(200).send(questionSetData);
   })
   .catch((error) => {
     console.log(error);
