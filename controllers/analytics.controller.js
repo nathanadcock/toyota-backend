@@ -2,7 +2,6 @@ const db = require("../models");
 const Employee = db.employees;
 const QuestionSet = db.questionsets;
 const Question = db.questions;
-
 const Op = db.Sequelize.Op;
 
 // fetch pending survey for user
