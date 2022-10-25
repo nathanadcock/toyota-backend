@@ -21,6 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // add routes from routes folder
 require('./routes/auth.routes')(app);
 require('./routes/survey.routes')(app);
+require('./routes/analytics.routes')(app);
 
 // simple route
 app.get("/", (req, res) => {
@@ -52,7 +53,7 @@ db.sequelize.sync({force: true})
     console.log("database successfully authenticated!")
     return Theme.create({name: 'something'})
   .then(() => {
-    return QuestionSet.create({themeId: 1})
+    return QuestionSet.create({name: 'Question Set 1', themeId: 1})
   })
   .then(() => {
     Question.create({employmentRole: 'Manager', question: "You are motivated by your organization's values.", questionsetId: 1})
@@ -60,6 +61,7 @@ db.sequelize.sync({force: true})
     return Question.create({employmentRole: 'Manager', question: "Your organization allows you to provide feedback.", questionsetId: 1})
   })
   .then(() => {
+    Response.create({response: '2', optResponse: 'nothing', anonymous: true, questionId: 1})
     Employee.create({firstName: 'Bob', lastName: 'Bob', email: "bob@gmail.com", managerId: 10, employmentRole: "Contractor", departmentID: 20, password: bcrypt.hashSync('testpass123!', 8)})
     return Employee.create({firstName: 'Nathan', lastName: 'Adcock', email: "nate@gmail.com", managerId: 25, employmentRole: "Manager", departmentID: 45, password: bcrypt.hashSync('pass', 8)})
   })

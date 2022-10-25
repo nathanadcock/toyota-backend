@@ -11,13 +11,7 @@ module.exports = function(app) {
   });
 
   app.get(
-    "/api/survey/fetchsurvey/:id",
-    [authJwt.verifyToken],
-    controller.fetchSurvey
-  );
-
-  app.post(
-    "/api/survey/submitsurvey",
+    "/api/analytics/getQuestionSetData",
     [authJwt.verifyToken],
     controller.storeSurveyResults
   );
