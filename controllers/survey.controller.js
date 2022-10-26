@@ -5,6 +5,7 @@ const Question = db.questions;
 const Survey = db.surveys;
 const ResponseSet = db.responsesets;
 const Resp = db.responses;
+const PendingSurvey = db.pendingsurveys;
 
 const Op = db.Sequelize.Op;
 
@@ -12,16 +13,9 @@ const Op = db.Sequelize.Op;
 exports.fetchSurvey = (req, res) => {
 
   // get pending survey, if any, for user
-  QuestionSet.findOne({
-      attributes: ['id'],
-      include: [{
-        attributes: ['id'],
-        model: Employee,
-        where: {
-          id: req.params.id
-        },
-        required: true
-      }],
+  PendingSurvey.findOne({
+      attributes: ['id', 'questionsetId'],
+      where: {employeeId: req.params.id},
       order: [
         ['id', 'ASC']
       ],
@@ -78,23 +72,17 @@ exports.storeSurveyResults = (req, res) => {
   let responseSetId;
 
   // get completed question set
-  QuestionSet.findOne({
-      attributes: ['id'],
-      include: [{
-        attributes: ['id'],
-        model: Employee,
-        where: {
-          id: userId
-        },
-        required: true
-      }],
-      order: [
-        ['id', 'ASC']
-      ],
-    })
-    .then((completedQuestionSet) => {
+  PendingSurvey.findOne({
+    attributes: ['id', 'questionsetId'],
+    where: {employeeId: userId},
+    order: [
+      ['id', 'ASC']
+    ],
+  })
+    .then((pendingSurvey) => {
       // get question set id
-      let questionSetId = completedQuestionSet.dataValues.id;
+      req.pendingSurveyId = pendingSurvey.dataValues.id;
+      let questionSetId = pendingSurvey.dataValues.questionsetId;
       // create the survey
       return Survey.create({
         employeeId: userId,
@@ -150,7 +138,12 @@ exports.storeSurveyResults = (req, res) => {
 
       return Promise.all(promiseList);
     })
-    .then((responses) => {
+    .then(() => {
+      return PendingSurvey.destroy({
+        where: {id: req.pendingSurveyId},
+      })
+    })
+    .then(() => {
       res.status(200).send({
         message: 'success',
       });

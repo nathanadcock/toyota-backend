@@ -10,6 +10,8 @@ const Theme = db.themes;
 exports.fetchThemes = (req, res, next) => {
   req.themes = [];
   let themeMap = new Map();
+  let map = new Map();
+  let themeData = [];
 
   Theme.findAll({
       attributes: ['id', 'name'],
@@ -28,8 +30,11 @@ exports.fetchThemes = (req, res, next) => {
           name: themeName,
           questionSets: []
         });
+
         themeMap.set(themeId, index);
+        map.set(themeId, [0, 0]);
       }
+      req.themeData = map;
       req.themeMap = themeMap;
       next()
     })
@@ -44,6 +49,7 @@ exports.fetchThemes = (req, res, next) => {
 exports.fetchQuestionSets = (req, res, next) => {
   let questionSetMap = new Map();
   let questionSetThemeMap = new Map();
+  let map = new Map();
 
   QuestionSet.findAll({
       attributes: ['id', 'name', 'themeId'],
@@ -70,7 +76,9 @@ exports.fetchQuestionSets = (req, res, next) => {
         let questionSetIndex = req.themes[themeIndex].questionSets.push(questionSetObj) - 1;
         questionSetMap.set(questionSetId, questionSetIndex);
         questionSetThemeMap.set(questionSetId, themeId);
+        map.set(questionSetId, [0, 0]);
       }
+      req.questionSetData = map;
       req.questionSetMap = questionSetMap;
       req.questionSetThemeMap = questionSetThemeMap;
 
@@ -87,6 +95,8 @@ exports.fetchQuestionSets = (req, res, next) => {
 exports.fetchQuestions = (req, res, next) => {
   let questionMap = new Map();
   let questionQuestionSetMap = new Map();
+  let optionMap = new Map();
+  let map = new Map();
 
   Question.findAll({
       attributes: ['id', 'question', 'value', 'label', 'questionsetId'],
@@ -95,7 +105,6 @@ exports.fetchQuestions = (req, res, next) => {
       ],
     })
     .then((questionsObj) => {
-      let optionMap = new Map();
       req.keys = [];
 
       for (let index = 0; index < questionsObj.length; index++) {
@@ -132,12 +141,15 @@ exports.fetchQuestions = (req, res, next) => {
           question: questionReceived.question,
           options: optionsArr
         }) - 1;
+
         questionQuestionSetMap.set(questionId, questionSetId);
         questionMap.set(questionId, questionIndex);
-        req.questionMap = questionMap;
-        req.questionQuestionSetMap = questionQuestionSetMap;
-        req.optionMap = optionMap;
+        map.set(questionId, [0, 0]);
       }
+      req.questionData = map;
+      req.questionMap = questionMap;
+      req.questionQuestionSetMap = questionQuestionSetMap;
+      req.optionMap = optionMap;
       next();
     })
     .catch((error) => {
@@ -150,6 +162,7 @@ exports.fetchQuestions = (req, res, next) => {
 
 exports.fetchResponsesAndSendToClient = (req, res) => {
   let promiseList = [];
+
   Resp.findAll({
       attributes: ['id', 'response', 'optResponse', 'anonymous', 'questionId'],
       order: [
@@ -165,7 +178,7 @@ exports.fetchResponsesAndSendToClient = (req, res) => {
         let managerName;
 
         let promise = ResponseSet.findOne({
-            attributes: ['surveyId'],
+            attributes: ['surveyId', 'questionsetId'],
             include: [{
               model: Resp,
               where: {
@@ -252,6 +265,21 @@ exports.fetchResponsesAndSendToClient = (req, res) => {
 
             req.themes[themeIndex].questionSets[questionSetIndex].questions[questionIndex].options[optionIndex].responses.push(finalResponseObj);
 
+            let [questionSum, questionTotalResponses] = req.questionData.get(questionId);
+            questionSum += Number(response.response);
+            questionTotalResponses++;
+            req.questionData.set(questionId, [questionSum, questionTotalResponses]);
+
+            let [questionSetSum, questionSetTotalResponses] = req.questionSetData.get(questionQuestionSetMap.get(questionId));
+            questionSetSum += Number(response.response);
+            questionSetTotalResponses++;
+            req.questionSetData.set(questionQuestionSetMap.get(questionId), [questionSetSum, questionSetTotalResponses]);
+
+            let [themeSum, themeTotalResponses] = req.themeData.get(questionSetThemeMap.get(questionQuestionSetMap.get(questionId)));
+            themeSum += Number(response.response);
+            themeTotalResponses++;
+            req.themeData.set(questionSetThemeMap.get(questionQuestionSetMap.get(questionId)), [themeSum, themeTotalResponses]);
+
             return;
           })
 
@@ -260,7 +288,39 @@ exports.fetchResponsesAndSendToClient = (req, res) => {
       return Promise.all(promiseList);
     })
     .then(() => {
-      let finalClientObj = req.themes;
+      req.questionScores = [];
+      for (let [key, value] of req.questionData) {
+        let [numerator, denominator] = value;
+        let score = numerator / denominator;
+        req.questionScores.push(key);
+        req.questionScores.push(score);
+      }
+
+      req.questionSetScores = [];
+      for (let [key, value] of req.questionSetData) {
+        let [numerator, denominator] = value;
+        let score = numerator / denominator;
+        //console.log(numerator + " " + denominator);
+        req.questionSetScores.push(key);
+        req.questionSetScores.push(score);
+      }
+
+      req.themeScores = [];
+      for (let [key, value] of req.themeData) {
+        let [numerator, denominator] = value;
+        let score = numerator / denominator;
+        //console.log(numerator + " " + denominator);
+        req.themeScores.push(key);
+        req.themeScores.push(score);
+      }
+
+      let finalClientObj = {
+        themes: req.themes,
+        questionScores: req.questionScores,
+        questionSetScores: req.questionSetScores,
+        themeScores: req.themeScores,
+      };
+
       res.status(200).send(finalClientObj);
     })
     .catch((error) => {
