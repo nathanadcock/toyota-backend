@@ -100,7 +100,7 @@ exports.fetchQuestionSets = (req, res, next) => {
   })
 }
 
-exports.fetchQuestionsAndResponses = (req, res) => {
+exports.fetchQuestionsAndResponses = (req, res, next) => {
   let questionMap = new Map();
   let questionQuestionSetMap = new Map();
   let promiseList = [];
@@ -168,7 +168,7 @@ exports.fetchQuestionsAndResponses = (req, res) => {
         let themeId = questionSetThemeMap.get(questionSetId);
         let themeIndex = themeMap.get(themeId);
 
-        req.themes[themeIndex].questionSets[questionSetIndex].questions.push({question: questionReceived.question, options: optionsArr});
+        req.themes[themeIndex].questionSets[questionSetIndex].questions.push({id: questionId, question: questionReceived.question, options: optionsArr});
         req.questionMap = questionMap;
         req.questionQuestionSetMap = questionQuestionSetMap;
         req.optionMap = optionMap;
@@ -187,105 +187,8 @@ exports.fetchQuestionsAndResponses = (req, res) => {
     return Promise.all(promiseList);
   })
   .then((responsesObj) => {
-    let promiseList = [];
-
-    for(index = 0; index < responsesObj.length; index++) {
-      for(innerIndex = 0; innerIndex < responsesObj[index].length; innerIndex++) {
-        let response = responsesObj[index][innerIndex].dataValues;
-        let questionId = response.questionId;
-        let employeeName;
-        let employeeId;
-        let managerName;
-
-        let promise = ResponseSet.findOne({
-          attributes: ['surveyId'],
-          include: [{
-            model: Resp,
-            where: {id: response.id},
-            required: true,
-          }]
-        })
-        .then((responseSet) => {
-          let surveyId = responseSet.dataValues.surveyId;
-          return Survey.findOne({
-            attribures: ['employeeId'],
-            include: [{
-              model: ResponseSet,
-              where: {surveyId: surveyId},
-              required: true,
-            }]
-          })
-        })
-        .then((survey) => {
-          employeeId = survey.dataValues.employeeId;
-          return Employee.findOne({
-            attributes: ['firstName', 'lastName', 'managerId'],
-            include: [{
-              model: Survey,
-              where: {employeeId: employeeId},
-              required: true,
-            }]
-          })
-        })
-        .then((employee) => {
-          //console.log(employee)
-          employeeName = (employee.dataValues.firstName + " " + employee.dataValues.lastName);
-          let managerId = employee.dataValues.managerId;
-          if(managerId !== null) {
-            return Employee.findOne({
-              attributes: ['firstName', 'lastName'],
-              where: {id: employee.dataValues.managerId},
-            })
-          }
-          return null;
-        })
-        .then((manager) => {
-          if(manager !== null) {
-            managerName = (manager.dataValues.firstName + " " + manager.dataValues.lastName);
-          } else {
-            managerName = 'No manager';
-          }
-
-          let finalResponseObj = {
-            userInputText: response.optResponse,
-            authorId: employeeId,
-            authorName: employeeName,
-            managerName: managerName,
-            anonymous: response.anonymous,
-          }
-          let questionMap = req.questionMap;
-          let questionQuestionSetMap = req.questionQuestionSetMap;
-          let questionSetThemeMap = req.questionSetThemeMap;
-          let questionSetMap = req.questionSetMap;
-          let themeMap = req.themeMap;
-          let optionMap = req.optionMap;
-          let responseValue = response.response;
-          let key = [];
-
-          for(let i = 0; i < req.keys.length; i++) {
-            key = req.keys[i];
-            if(key[0] === questionId && key[1] === responseValue) {
-              break;
-            }
-          }
-
-          let themeIndex = themeMap.get(questionSetThemeMap.get(questionQuestionSetMap.get(questionId)));
-          let questionSetIndex = questionSetMap.get(questionQuestionSetMap.get(questionId));
-          let questionIndex = questionMap.get(questionId);
-          let optionIndex = optionMap.get(key);
-
-          req.themes[themeIndex].questionSets[questionSetIndex].questions[questionIndex].options[optionIndex].responses.push(finalResponseObj);
-
-          return;
-        })
-        promiseList.push(promise);
-      }
-    }
-    return Promise.all(promiseList);
-  })
-  .then(() => {
-    let finalObj = req.themes;
-    res.status(200).send(finalObj);
+    req.responsesObj = responsesObj
+    next();
   })
   .catch((error) => {
     console.log(error);
@@ -295,10 +198,122 @@ exports.fetchQuestionsAndResponses = (req, res) => {
   })
 }
 
-// exports.fetchResponses = (req, res) => {
+exports.insertResponsesIntoClientObjectAndSend = (req, res) => {
+  let responsesObj = req.responsesObj;
+  let promiseList = [];
 
-//   next()
-// }
+  for(index = 0; index < responsesObj.length; index++) {
+    for(innerIndex = 0; innerIndex < responsesObj[index].length; innerIndex++) {
+      let response = responsesObj[index][innerIndex].dataValues;
+      let questionId = response.questionId;
+      let employeeName;
+      let employeeId;
+      let managerName;
+
+      let promise = ResponseSet.findOne({
+        attributes: ['surveyId'],
+        include: [{
+          model: Resp,
+          where: {id: response.id},
+          required: true,
+        }]
+      })
+      .then((responseSet) => {
+        let surveyId = responseSet.dataValues.surveyId;
+        return Survey.findOne({
+          attribures: ['employeeId'],
+          include: [{
+            model: ResponseSet,
+            where: {surveyId: surveyId},
+            required: true,
+          }]
+        })
+      })
+      .then((survey) => {
+        employeeId = survey.dataValues.employeeId;
+        return Employee.findOne({
+          attributes: ['firstName', 'lastName', 'managerId'],
+          include: [{
+            model: Survey,
+            where: {employeeId: employeeId},
+            required: true,
+          }]
+        })
+      })
+      .then((employee) => {
+        employeeName = (employee.dataValues.firstName + " " + employee.dataValues.lastName);
+        let managerId = employee.dataValues.managerId;
+        if(managerId !== null) {
+          return Employee.findOne({
+            attributes: ['firstName', 'lastName'],
+            where: {id: employee.dataValues.managerId},
+          })
+        }
+        return null;
+      })
+      .then((manager) => {
+        if(manager !== null) {
+          managerName = (manager.dataValues.firstName + " " + manager.dataValues.lastName);
+        } else {
+          managerName = 'No manager';
+        }
+
+        let finalResponseObj = {
+          userInputText: response.optResponse,
+          authorId: employeeId,
+          authorName: employeeName,
+          managerName: managerName,
+          anonymous: response.anonymous,
+        }
+
+        let questionMap = req.questionMap;
+        let questionQuestionSetMap = req.questionQuestionSetMap;
+        let questionSetThemeMap = req.questionSetThemeMap;
+        let questionSetMap = req.questionSetMap;
+        let themeMap = req.themeMap;
+        let optionMap = req.optionMap;
+        let responseValue = response.response;
+        let key = [];
+
+        for(let i = 0; i < req.keys.length; i++) {
+          [value1, value2] = req.keys[i];
+          if(value1 === questionId && value2 === responseValue) {
+            key = req.keys[i];
+            break;
+          }
+        }
+
+        let themeIndex = themeMap.get(questionSetThemeMap.get(questionQuestionSetMap.get(questionId)));
+        let questionSetIndex = questionSetMap.get(questionQuestionSetMap.get(questionId));
+        let questionIndex = questionMap.get(questionId);
+        let optionIndex = optionMap.get(key);
+
+        req.themes[themeIndex].questionSets[questionSetIndex].questions[questionIndex].options[optionIndex].responses.push(finalResponseObj);
+
+        return;
+      })
+
+      promiseList.push(promise);
+    }
+  }
+
+  Promise.all(promiseList)
+  .then(() => {
+    let finalClientObj = req.themes;
+    res.status(200).send(finalClientObj);
+  })
+  .catch((error) => {
+    console.log(error);
+    res.status(500).send({
+      message: 'could not fetch the questions and/or responses'
+    })
+  })
+}
+
+/*
+    DO NOT DELETE THE COMMENTED OUT SECTION BELOW
+    THE CODE STILL MIGHT BE USEFUL
+*/
 
 // // fetch question set data
 // exports.fetchQuestionSetData = (req, res) => {
