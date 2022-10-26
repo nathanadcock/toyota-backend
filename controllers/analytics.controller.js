@@ -12,8 +12,6 @@ exports.fetchQuestionSetData = (req, res) => {
   let questionMap = new Map();
   let questionOptionsArrMap = [];
   let questionSetId;
-  // let questions;
-  // let responses;
   // get question set
   QuestionSet.findOne({
     attributes: ['id', 'name'],
@@ -39,7 +37,6 @@ exports.fetchQuestionSetData = (req, res) => {
     })
   })
   .then((questionsObj) => {
-    //questions = questionsObj;
     let promiseList = [];
     for(let index = 0; index < questionsObj.length; index++) {
       let questionReceived = questionsObj[index].dataValues;
@@ -73,7 +70,6 @@ exports.fetchQuestionSetData = (req, res) => {
     return Promise.all(promiseList);
   })
   .then((responsesObj) => {
-    //responses = responsesObj;
     let promiseList = [];
 
     for(index = 0; index < responsesObj.length; index++) {
