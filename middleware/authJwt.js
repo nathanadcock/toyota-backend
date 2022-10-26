@@ -28,32 +28,36 @@ const verifyToken = (req, res, next) => {
 //on the dashboard to prevent non-admins from accessing data they shouldn't be able to access, so keep this here for that just in case
 const isRegular = (req, res, next) => {
   Employee.findByPk(req.userId)
-  .then(user => {
-    if(user.empoloymentRoll !== "Regular")
+    .then(user => {
+      if (user.empoloymentRoll !== "Regular")
 
-      res.status(403).send({
-        message: "Require Regular Role!"
+        res.status(403).send({
+          message: "Require Regular Role!"
 
+        });
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: 'Could not find employee.'
+      });
     });
-  })
-  .catch(err => {
-    res.status(500).json({message: 'Could not find employee.'});
-  });
 };
 
 const isContractor = (req, res, next) => {
   Employee.findByPk(req.employeeID)
-  .then(user => {
-    if(user.empoloymentRoll !== "Contractor")
+    .then(user => {
+      if (user.empoloymentRoll !== "Contractor")
 
-      res.status(403).send({
-        message: "Require Moderator Role!"
+        res.status(403).send({
+          message: "Require Moderator Role!"
 
+        });
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: 'Could not find employee.'
+      });
     });
-  })
-  .catch(err => {
-    res.status(500).json({message: 'Could not find employee.'});
-  });
 };
 
 const authJwt = {

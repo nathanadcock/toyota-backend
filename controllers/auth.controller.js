@@ -10,32 +10,38 @@ var bcrypt = require("bcryptjs");
 exports.signup = (req, res) => {
   // Save Employee to Database, will probably need to update this code, not sure how registration process will work
   Employee.create({
-    firstName: req.body.firstName,
-    lastName: req.body.lastName,
-    email: req.body.email,
-    managerID: req.body.managerID,
-    employmentRole: req.body.employmentRole,
-    departmentID: req.body.departmentID,
-    password: bcrypt.hashSync(req.body.password, 8)
-  })
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      managerID: req.body.managerID,
+      employmentRole: req.body.employmentRole,
+      departmentID: req.body.departmentID,
+      password: bcrypt.hashSync(req.body.password, 8)
+    })
     .then(user => {
-        res.send({ message: "Employee was registered successfully!" });
+      res.send({
+        message: "Employee was registered successfully!"
+      });
     })
     .catch(err => {
-      res.status(500).send({ message: err.message });
+      res.status(500).send({
+        message: err.message
+      });
     });
 };
 
 exports.signin = (req, res) => {
   //console.log(req.body)
   Employee.findOne({
-    where: {
+      where: {
         email: req.body.email
-    }
-  })
+      }
+    })
     .then(user => {
       if (!user) {
-        return res.status(404).send({ message: "Employee Not found." });
+        return res.status(404).send({
+          message: "Employee Not found."
+        });
       }
 
       let passwordIsValid = bcrypt.compareSync(
@@ -50,7 +56,9 @@ exports.signin = (req, res) => {
         });
       }
 
-      let token = jwt.sign({ id: user.id }, config.secret, {
+      let token = jwt.sign({
+        id: user.id
+      }, config.secret, {
         expiresIn: 43200 // 12 hours
       });
 
@@ -64,6 +72,8 @@ exports.signin = (req, res) => {
 
     })
     .catch(err => {
-      res.status(500).send({ message: err.message });
+      res.status(500).send({
+        message: err.message
+      });
     });
 };

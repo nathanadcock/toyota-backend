@@ -18,10 +18,6 @@ module.exports = (sequelize, Sequelize) => {
         type: Sequelize.BOOLEAN,
         allowNull: false
       },
-      // questionID: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: false
-      // }
     });
 
     return Response;
