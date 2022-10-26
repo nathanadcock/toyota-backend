@@ -31,6 +31,9 @@ exports.fetchThemes = (req, res, next) => {
   })
   .catch((error) => {
     console.log(error);
+    res.status(500).send({
+      message: 'could not fetch any themes'
+    })
   })
 }
 
@@ -91,6 +94,9 @@ exports.fetchQuestionSets = (req, res, next) => {
   })
   .catch((error) => {
     console.log(error);
+    res.status(500).send({
+      message: 'could not fetch the question sets'
+    })
   })
 }
 
@@ -170,6 +176,9 @@ exports.fetchQuestionsAndResponses = (req, res) => {
         let promise = Resp.findAll({
           attributes: ['id', 'response', 'optResponse', 'anonymous', 'questionId'],
           where: {questionId: questionId},
+          order: [
+            ['id', 'ASC']
+          ],
         });
 
         promiseList.push(promise);
@@ -280,6 +289,9 @@ exports.fetchQuestionsAndResponses = (req, res) => {
   })
   .catch((error) => {
     console.log(error);
+    res.status(500).send({
+      message: 'could not fetch the questions and/or responses'
+    })
   })
 }
 
