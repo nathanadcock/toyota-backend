@@ -113,10 +113,14 @@ exports.fetchQuestionSetData = (req, res) => {
         .then((employee) => {
           //console.log(employee)
           employeeName = (employee.dataValues.firstName + " " + employee.dataValues.lastName);
-          return Employee.findOne({
-            attributes: ['firstName', 'lastName'],
-            where: {id: employee.dataValues.managerId},
-          })
+          let managerId = employee.dataValues.managerId;
+          if(managerId !== null) {
+            return Employee.findOne({
+              attributes: ['firstName', 'lastName'],
+              where: {id: employee.dataValues.managerId},
+            })
+          }
+          return null;
         })
         .then((manager) => {
           if(manager !== null) {

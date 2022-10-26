@@ -20,7 +20,7 @@ module.exports = (sequelize, Sequelize) => {
       },
       managerId: {
         type: Sequelize.INTEGER,
-        allowNull: false
+        allowNull: true,
       },
       employmentRole: {
         type: Sequelize.STRING,
