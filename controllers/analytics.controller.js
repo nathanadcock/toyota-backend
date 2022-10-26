@@ -6,23 +6,24 @@ const Resp = db.responses;
 const ResponseSet = db.responsesets;
 const Survey = db.surveys;
 
-// fetch pending survey for user
+// fetch question set data
 exports.fetchQuestionSetData = (req, res) => {
   let questionSetData = {name: '', questions: []};
   let questionMap = new Map();
+  let questionOptionsArrMap = [];
   let questionSetId;
-  let questions;
-  let responses;
-  // get pending survey, if any, for user
+  // let questions;
+  // let responses;
+  // get question set
   QuestionSet.findOne({
     attributes: ['id', 'name'],
     where: {
       name: req.body.name,
     }
   })
-  .then((pendingSurvey) => {
+  .then((questionSet) => {
     // get question set id associated with the pending survey
-    questionSetId = pendingSurvey.dataValues.id;
+    questionSetId = questionSet.dataValues.id;
     // get the questions that belong to the question set
     return Question.findAll({
       attributes: ['id', 'question', 'value', 'label'],
@@ -38,7 +39,7 @@ exports.fetchQuestionSetData = (req, res) => {
     })
   })
   .then((questionsObj) => {
-    questions = questionsObj;
+    //questions = questionsObj;
     let promiseList = [];
     for(let index = 0; index < questionsObj.length; index++) {
       let questionReceived = questionsObj[index].dataValues;
@@ -49,6 +50,7 @@ exports.fetchQuestionSetData = (req, res) => {
       let optionsArr = [];
 
       let innerLoopLength = questionReceived.value.length;
+      let newMap = new Map();
       for(let indexInnerLoop = 0; indexInnerLoop < innerLoopLength; indexInnerLoop++) {
         let optionsElement = {
           value: questionReceived.value[indexInnerLoop],
@@ -56,7 +58,9 @@ exports.fetchQuestionSetData = (req, res) => {
           responses: [],
         };
         optionsArr.push(optionsElement);
+        newMap.set(questionReceived.value[indexInnerLoop], indexInnerLoop);
       }
+      questionOptionsArrMap.push(newMap);
       questionSetData.questions.push({question: questionReceived.question, options: optionsArr});
 
       let promise = Resp.findAll({
@@ -69,7 +73,7 @@ exports.fetchQuestionSetData = (req, res) => {
     return Promise.all(promiseList);
   })
   .then((responsesObj) => {
-    responses = responsesObj;
+    //responses = responsesObj;
     let promiseList = [];
 
     for(index = 0; index < responsesObj.length; index++) {
@@ -137,12 +141,10 @@ exports.fetchQuestionSetData = (req, res) => {
             anonymous: response.anonymous,
           }
 
-          for(let index = 0; index < questionSetData.questions[questionMap.get(questionId)].options.length; index++) {
-            if (response.response === questionSetData.questions[questionMap.get(questionId)].options[index].value) {
-              questionSetData.questions[questionMap.get(questionId)].options[index].responses.push(finalResponseObj);
-              break;
-            }
-          }
+          let responseValue = questionSetData.questions[questionMap.get(questionId)].options[index].value;
+          let questionIndex = questionMap.get(questionId);
+          let optionIndex = questionOptionsArrMap[questionMap.get(questionId)].get(responseValue);
+          questionSetData.questions[questionIndex].options[optionIndex].responses.push(finalResponseObj);
           return;
         })
         promiseList.push(promise);
