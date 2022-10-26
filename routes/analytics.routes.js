@@ -12,7 +12,7 @@ module.exports = function(app) {
 
   app.post(
     "/api/analytics/getQuestionSetData",
-    //[authJwt.verifyToken],
+    [authJwt.verifyToken],
     controller.fetchQuestionSetData
   );
 };
