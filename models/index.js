@@ -66,14 +66,14 @@ db.surveys.belongsTo(db.questionsets, {
 db.responsesets.hasMany(db.responses);
 db.responses.belongsTo(db.responsesets, {
   foreignKey: {
-    allowNull: true
+    allowNull: false
   }
 });
 
 db.questions.hasMany(db.responses);
 db.responses.belongsTo(db.questions, {
   foreignKey: {
-    allowNull: true
+    allowNull: false
   }
 });
 

@@ -6,11 +6,12 @@ var bcrypt = require("bcryptjs");
 
 const app = express();
 
-var corsOptions = {
-  origin: "http://localhost:4200"
-};
+// var corsOptions = {
+//   origin: "http://localhost:4200"
+// };
 
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 
 // parse requests of content-type - application/json
 app.use(bodyParser.json());
@@ -61,7 +62,6 @@ db.sequelize.sync({force: true})
     return Question.create({employmentRole: 'Manager', question: "Your organization allows you to provide feedback.", questionsetId: 1})
   })
   .then(() => {
-    Response.create({response: '2', optResponse: 'nothing', anonymous: true, questionId: 1})
     Employee.create({firstName: 'Bob', lastName: 'Bob', email: "bob@gmail.com", managerId: 10, employmentRole: "Contractor", departmentID: 20, password: bcrypt.hashSync('testpass123!', 8)})
     return Employee.create({firstName: 'Nathan', lastName: 'Adcock', email: "nate@gmail.com", managerId: 25, employmentRole: "Manager", departmentID: 45, password: bcrypt.hashSync('pass', 8)})
   })

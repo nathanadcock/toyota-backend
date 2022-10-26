@@ -1,4 +1,4 @@
-const controller = require("../controllers/survey.controller");
+const controller = require("../controllers/analytics.controller");
 const { authJwt } = require("../middleware");
 
 module.exports = function(app) {
@@ -10,9 +10,9 @@ module.exports = function(app) {
     next();
   });
 
-  app.get(
+  app.post(
     "/api/analytics/getQuestionSetData",
-    [authJwt.verifyToken],
-    controller.storeSurveyResults
+    //[authJwt.verifyToken],
+    controller.fetchQuestionSetData
   );
 };

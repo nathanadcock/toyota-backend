@@ -3,26 +3,29 @@ const Employee = db.employees;
 const QuestionSet = db.questionsets;
 const Question = db.questions;
 const Resp = db.responses;
-const Op = db.Sequelize.Op;
+const ResponseSet = db.responsesets;
+const Survey = db.surveys;
 
 // fetch pending survey for user
 exports.fetchQuestionSetData = (req, res) => {
-
-  let questionSetData = [];
+  let questionSetData = {name: '', questions: []};
+  let questionMap = new Map();
+  let questionSetId;
   let questions;
+  let responses;
   // get pending survey, if any, for user
   QuestionSet.findOne({
     attributes: ['id', 'name'],
     where: {
-      name: req.body.questionSetName,
+      name: req.body.name,
     }
   })
   .then((pendingSurvey) => {
     // get question set id associated with the pending survey
-    let questionSetId = pendingSurvey.dataValues.id;
+    questionSetId = pendingSurvey.dataValues.id;
     // get the questions that belong to the question set
     return Question.findAll({
-      attributes: ['question', 'value', 'label'],
+      attributes: ['id', 'question', 'value', 'label'],
       include: [{
         attributes: ['id'],
         model: QuestionSet,
@@ -41,19 +44,8 @@ exports.fetchQuestionSetData = (req, res) => {
       let questionReceived = questionsObj[index].dataValues;
       let questionId = questionReceived.id;
 
-      let promise = Resp.findAll({
-        attributes: ['id', 'response', 'optResponse', 'anonymous'],
-        where: {questionId: questionId},
-      });
+      questionMap.set(questionId, index);
 
-      promiseList.push(promise);
-    }
-    return promiseList;
-  })
-  // this then() formats all of the questions and their values and labels, and puts it all in an array (questionSet) and sends the array to the client
-  .then((responses) => {
-    for(let index = 0; index < questions.length; index++) {
-      let questionReceived = questions[index].dataValues;
       let optionsArr = [];
 
       let innerLoopLength = questionReceived.value.length;
@@ -65,8 +57,96 @@ exports.fetchQuestionSetData = (req, res) => {
         };
         optionsArr.push(optionsElement);
       }
-      questionSetData.push({question: questionReceived.question, options: optionsArr});
+      questionSetData.questions.push({question: questionReceived.question, options: optionsArr});
+
+      let promise = Resp.findAll({
+        attributes: ['id', 'response', 'optResponse', 'anonymous', 'questionId'],
+        where: {questionId: questionId},
+      });
+
+      promiseList.push(promise);
     }
+    return Promise.all(promiseList);
+  })
+  .then((responsesObj) => {
+    responses = responsesObj;
+    let promiseList = [];
+
+    for(index = 0; index < responsesObj.length; index++) {
+      for(innerIndex = 0; innerIndex < responsesObj[index].length; innerIndex++) {
+        let response = responsesObj[index][innerIndex].dataValues;
+        let questionId = response.questionId;
+        let employeeName;
+        let employeeId;
+        let managerName;
+        let promise = ResponseSet.findOne({
+          attributes: ['surveyId'],
+          include: [{
+            model: Resp,
+            where: {id: response.id},
+            required: true,
+          }]
+        })
+        .then((responseSet) => {
+          let surveyId = responseSet.dataValues.surveyId;
+          return Survey.findOne({
+            attribures: ['employeeId'],
+            include: [{
+              model: ResponseSet,
+              where: {surveyId: surveyId},
+              required: true,
+            }]
+          })
+        })
+        .then((survey) => {
+          employeeId = survey.dataValues.employeeId;
+          return Employee.findOne({
+            attributes: ['firstName', 'lastName', 'managerId'],
+            include: [{
+              model: Survey,
+              where: {employeeId: employeeId},
+              required: true,
+            }]
+          })
+        })
+        .then((employee) => {
+          //console.log(employee)
+          employeeName = (employee.dataValues.firstName + " " + employee.dataValues.lastName);
+          return Employee.findOne({
+            attributes: ['firstName', 'lastName'],
+            where: {id: employee.dataValues.managerId},
+          })
+        })
+        .then((manager) => {
+          if(manager !== null) {
+            managerName = (manager.dataValues.firstName + " " + manager.dataValues.lastName);
+          } else {
+            managerName = 'No manager';
+          }
+
+          let finalResponseObj = {
+            userInputText: response.optResponse,
+            authorId: employeeId,
+            authorName: employeeName,
+            managerName: managerName,
+            anonymous: response.anonymous,
+          }
+
+          for(let index = 0; index < questionSetData.questions[questionMap.get(questionId)].options.length; index++) {
+            if (response.response === questionSetData.questions[questionMap.get(questionId)].options[index].value) {
+              questionSetData.questions[questionMap.get(questionId)].options[index].response.push(finalResponseObj);
+              break;
+            }
+          }
+          return;
+        })
+        promiseList.push(promise);
+      }
+    }
+    return Promise.all(promiseList);
+  })
+  .then(() => {
+    questionSetData.name = req.body.name;
     res.status(200).send(questionSetData);
   })
   .catch((error) => {
