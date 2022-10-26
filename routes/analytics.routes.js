@@ -10,14 +10,14 @@ module.exports = function(app) {
     next();
   });
 
-  app.post(
-    "/api/analytics/getQuestionSetData",
+  app.get(
+    "/api/analytics/getReportData",
     //[authJwt.verifyToken],
     [
       controller.fetchThemes,
       controller.fetchQuestionSets,
-      controller.fetchQuestionsAndResponses,
+      controller.fetchQuestions,
     ],
-    controller.insertResponsesIntoClientObjectAndSend,
+    controller.fetchResponsesAndSendToClient,
   );
 };
