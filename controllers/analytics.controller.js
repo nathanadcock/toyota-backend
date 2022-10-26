@@ -79,6 +79,7 @@ exports.fetchQuestionSetData = (req, res) => {
         let employeeName;
         let employeeId;
         let managerName;
+
         let promise = ResponseSet.findOne({
           attributes: ['surveyId'],
           include: [{
