@@ -53,7 +53,7 @@ exports.fetchQuestionSetData = (req, res) => {
         let optionsElement = {
           value: questionReceived.value[indexInnerLoop],
           label: questionReceived.label[indexInnerLoop],
-          response: [],
+          responses: [],
         };
         optionsArr.push(optionsElement);
       }
@@ -139,7 +139,7 @@ exports.fetchQuestionSetData = (req, res) => {
 
           for(let index = 0; index < questionSetData.questions[questionMap.get(questionId)].options.length; index++) {
             if (response.response === questionSetData.questions[questionMap.get(questionId)].options[index].value) {
-              questionSetData.questions[questionMap.get(questionId)].options[index].response.push(finalResponseObj);
+              questionSetData.questions[questionMap.get(questionId)].options[index].responses.push(finalResponseObj);
               break;
             }
           }
