@@ -18,6 +18,6 @@ module.exports = function(app) {
       controller.fetchQuestionSets,
       controller.fetchQuestions,
     ],
-    controller.fetchResponsesAndSendToClient,
+    controller.fetchResponsesAndCalculateScores,
   );
 };

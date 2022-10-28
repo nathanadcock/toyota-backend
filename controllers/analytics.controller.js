@@ -160,7 +160,7 @@ exports.fetchQuestions = (req, res, next) => {
     })
 }
 
-exports.fetchResponsesAndSendToClient = (req, res) => {
+exports.fetchResponsesAndCalculateScores = (req, res) => {
   let promiseList = [];
 
   Resp.findAll({
@@ -292,33 +292,37 @@ exports.fetchResponsesAndSendToClient = (req, res) => {
       for (let [key, value] of req.questionData) {
         let [numerator, denominator] = value;
         let score = numerator / denominator;
-        req.questionScores.push(key);
-        req.questionScores.push(score);
+
+        let questionIndex = req.questionMap(key);
+        let questionSetIndex = req.questionSetMap(req.questionQuestionSetMap(key));
+        let themeIndex = req.themeMap(req.questionSetThemeMap(req.questionSetMap(req.questionQuestionSetMap(key))));
+
+        req.themes[themeIndex].questionSets[questionSetIndex].questions[questionIndex].score = score;
       }
 
       req.questionSetScores = [];
       for (let [key, value] of req.questionSetData) {
         let [numerator, denominator] = value;
         let score = numerator / denominator;
-        //console.log(numerator + " " + denominator);
-        req.questionSetScores.push(key);
-        req.questionSetScores.push(score);
+
+        let questionSetIndex = req.questionSetMap(key);
+        let themeIndex = req.themeMap(req.questionSetThemeMap(key));
+
+        req.themes[themeIndex].questionSets[questionSetIndex].score = score;
       }
 
       req.themeScores = [];
       for (let [key, value] of req.themeData) {
         let [numerator, denominator] = value;
         let score = numerator / denominator;
-        //console.log(numerator + " " + denominator);
-        req.themeScores.push(key);
-        req.themeScores.push(score);
+
+        let themeIndex = req.themeMap(key);
+
+        req.themes[themeIndex].score = score;
       }
 
       let finalClientObj = {
         themes: req.themes,
-        questionScores: req.questionScores,
-        questionSetScores: req.questionSetScores,
-        themeScores: req.themeScores,
       };
 
       res.status(200).send(finalClientObj);
