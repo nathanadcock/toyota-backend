@@ -288,25 +288,23 @@ exports.fetchResponsesAndCalculateScores = (req, res) => {
       return Promise.all(promiseList);
     })
     .then(() => {
-      req.questionScores = [];
       for (let [key, value] of req.questionData) {
         let [numerator, denominator] = value;
         let score = numerator / denominator;
 
-        let questionIndex = req.questionMap(key);
-        let questionSetIndex = req.questionSetMap(req.questionQuestionSetMap(key));
-        let themeIndex = req.themeMap(req.questionSetThemeMap(req.questionSetMap(req.questionQuestionSetMap(key))));
+        let questionIndex = req.questionMap.get(key);
+        let questionSetIndex = req.questionSetMap.get(req.questionQuestionSetMap.get(key));
+        let themeIndex = req.themeMap.get(req.questionSetThemeMap.get(req.questionQuestionSetMap.get(key)));
 
         req.themes[themeIndex].questionSets[questionSetIndex].questions[questionIndex].score = score;
       }
 
-      req.questionSetScores = [];
       for (let [key, value] of req.questionSetData) {
         let [numerator, denominator] = value;
         let score = numerator / denominator;
 
-        let questionSetIndex = req.questionSetMap(key);
-        let themeIndex = req.themeMap(req.questionSetThemeMap(key));
+        let questionSetIndex = req.questionSetMap.get(key);
+        let themeIndex = req.themeMap.get(req.questionSetThemeMap.get(key));
 
         req.themes[themeIndex].questionSets[questionSetIndex].score = score;
       }
@@ -316,7 +314,7 @@ exports.fetchResponsesAndCalculateScores = (req, res) => {
         let [numerator, denominator] = value;
         let score = numerator / denominator;
 
-        let themeIndex = req.themeMap(key);
+        let themeIndex = req.themeMap.get(key);
 
         req.themes[themeIndex].score = score;
       }
