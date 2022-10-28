@@ -12,8 +12,8 @@ module.exports = function(app) {
 
   app.get(
     "/api/analytics/getReportData",
-    //[authJwt.verifyToken],
     [
+      authJwt.verifyToken,
       controller.fetchThemes,
       controller.fetchQuestionSets,
       controller.fetchQuestions,

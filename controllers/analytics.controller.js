@@ -11,7 +11,6 @@ exports.fetchThemes = (req, res, next) => {
   req.themes = [];
   let themeMap = new Map();
   let map = new Map();
-  let themeData = [];
 
   Theme.findAll({
       attributes: ['id', 'name'],
@@ -265,18 +264,23 @@ exports.fetchResponsesAndCalculateScores = (req, res) => {
 
             req.themes[themeIndex].questionSets[questionSetIndex].questions[questionIndex].options[optionIndex].responses.push(finalResponseObj);
 
+            const Scale = 10; // this is the scale all of the scores will be based on no matter their potential maximum value
+            let maxValue = req.themes[themeIndex].questionSets[questionSetIndex].questions[questionIndex].options.length;
+            let multiplier = Scale / maxValue;
+            let responseVal = Number(response.response);
+
             let [questionSum, questionTotalResponses] = req.questionData.get(questionId);
-            questionSum += Number(response.response);
+            questionSum += (responseVal * multiplier);
             questionTotalResponses++;
             req.questionData.set(questionId, [questionSum, questionTotalResponses]);
 
             let [questionSetSum, questionSetTotalResponses] = req.questionSetData.get(questionQuestionSetMap.get(questionId));
-            questionSetSum += Number(response.response);
+            questionSetSum += (responseVal * multiplier);
             questionSetTotalResponses++;
             req.questionSetData.set(questionQuestionSetMap.get(questionId), [questionSetSum, questionSetTotalResponses]);
 
             let [themeSum, themeTotalResponses] = req.themeData.get(questionSetThemeMap.get(questionQuestionSetMap.get(questionId)));
-            themeSum += Number(response.response);
+            themeSum += (responseVal * multiplier);
             themeTotalResponses++;
             req.themeData.set(questionSetThemeMap.get(questionQuestionSetMap.get(questionId)), [themeSum, themeTotalResponses]);
 
@@ -288,9 +292,12 @@ exports.fetchResponsesAndCalculateScores = (req, res) => {
       return Promise.all(promiseList);
     })
     .then(() => {
+      const Scale = 10 // change this depending on what scale you want the scores to be
+
       for (let [key, value] of req.questionData) {
         let [numerator, denominator] = value;
         let score = numerator / denominator;
+
 
         let questionIndex = req.questionMap.get(key);
         let questionSetIndex = req.questionSetMap.get(req.questionQuestionSetMap.get(key));
@@ -309,7 +316,6 @@ exports.fetchResponsesAndCalculateScores = (req, res) => {
         req.themes[themeIndex].questionSets[questionSetIndex].score = score;
       }
 
-      req.themeScores = [];
       for (let [key, value] of req.themeData) {
         let [numerator, denominator] = value;
         let score = numerator / denominator;
