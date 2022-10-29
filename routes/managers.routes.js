@@ -1,5 +1,5 @@
 const { authJwt, buildAnalyticsReport } = require("../middleware");
-const controller = require("../controllers/user.controller");
+const controller = require("../controllers/manager.controller");
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -11,13 +11,7 @@ module.exports = function(app) {
   });
 
   app.get(
-    "/api/users/:id/pending-surveys",
-    [authJwt.verifyToken],
-    controller.getUserPendingSurvey,
-  );
-
-  app.get(
-    "/api/users/:id/report",
+    "/api/managers/:id/report",
     [
       authJwt.verifyToken,
       buildAnalyticsReport.prepareThemes,
@@ -28,22 +22,4 @@ module.exports = function(app) {
     ],
     controller.getReport,
   );
-
-  // app.get(
-  //   "/api/users/:id",
-  //   [verifySignUp.checkDuplicateEmail],
-  //   controller.getUser,
-  // );
-
-  app.post(
-    "/api/users/:id/surveys",
-    [authJwt.verifyToken],
-    controller.createUserSurvey,
-  );
-
-  // app.get(
-  //   "/api/users",
-  //   [verifySignUp.checkDuplicateEmail],
-  //   controller.getUsers,
-  // );
 };

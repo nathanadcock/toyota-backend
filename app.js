@@ -22,9 +22,11 @@ app.use(bodyParser.urlencoded({
 
 // add routes from routes folder
 require('./routes/auth.routes')(app);
-require('./routes/user.routes')(app);
-require('./routes/survey.routes')(app);
-require('./routes/pendingsurvey.routes')(app);
+require('./routes/users.routes')(app);
+require('./routes/managers.routes')(app);
+require('./routes/surveys.routes')(app);
+require('./routes/pendingsurveys.routes')(app);
+require('./routes/questionsets.routes')(app);
 //require('./routes/analytics.routes')(app);
 
 // set port, listen for requests

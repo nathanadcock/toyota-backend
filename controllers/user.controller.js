@@ -6,27 +6,11 @@ const ResponseSet = db.responsesets;
 const Resp = db.responses;
 const PendingSurvey = db.pendingsurveys;
 
-const Op = db.Sequelize.Op;
-
-exports.getReport = (req, res) => {
-  const clientObject = {
-    status: "success",
-    data: {
-      themes: req.themes,
-    },
-  };
-
-  console.log(clientObject.data.themes);
-
-  res.status(200).send(clientObject);
-};
-
 // fetch pending surveys for user
 exports.getUserPendingSurvey = (req, res) => {
   // array to store id's for pending surveys
   let pendingSurveyIds = [];
   // get pending surveys, if any, for user
-  console.log(req.params.id);
   PendingSurvey.findAll({
     attributes: ["id", "questionsetId"],
     where: { employeeId: req.params.id },
@@ -85,12 +69,9 @@ exports.getUserPendingSurvey = (req, res) => {
       }
 
       const clientObject = {
-        status: "success",
-        data: {
-          id: questionSetId,
-          questionSet: questionSet,
-          pendingSurveys: pendingSurveyIds,
-        },
+        id: questionSetId,
+        questionSet: questionSet,
+        pendingSurveys: pendingSurveyIds,
       };
       res.status(200).send(clientObject);
     })
@@ -134,7 +115,6 @@ exports.createUserSurvey = (req, res) => {
         let questionReceived = req.body.questions[index];
         let response = req.body.userResponses[index].selectedOptionValue;
         let optionalResponse = req.body.userResponses[index].userInputText;
-        console.log(req.body.questions)
 
         let promise = Resp.create({
           response: response,
