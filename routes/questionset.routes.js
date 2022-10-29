@@ -1,5 +1,5 @@
-// const controller = require("../controllers/survey.controller");
 const { authJwt } = require("../middleware");
+const controller = require("../controllers/questionset.controller");
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -11,14 +11,14 @@ module.exports = function(app) {
   });
 
   // app.get(
-  //   "/api/survey/:id",
+  //   "/api/question-sets/:id",
   //   [authJwt.verifyToken],
-  //   controller.getSurvey
+  //   controller.getQuestionSet,
   // );
 
-  // app.post(
-  //   "/api/survey",
-  //   [authJwt.verifyToken],
-  //   controller.createSurvey
-  // );
+  app.post(
+    "/api/question-sets",
+    [authJwt.verifyToken],
+    controller.createQuestionSet,
+  );
 };

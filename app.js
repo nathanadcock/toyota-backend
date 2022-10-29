@@ -22,15 +22,10 @@ app.use(bodyParser.urlencoded({
 
 // add routes from routes folder
 require('./routes/auth.routes')(app);
+require('./routes/user.routes')(app);
 require('./routes/survey.routes')(app);
-require('./routes/analytics.routes')(app);
-
-// simple route
-app.get("/", (req, res) => {
-  res.json({
-    message: "Hello."
-  });
-});
+require('./routes/pendingsurvey.routes')(app);
+//require('./routes/analytics.routes')(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 8080;
@@ -39,7 +34,6 @@ app.listen(PORT, () => {
 });
 
 const db = require("./models");
-const Response = db.responses;
 const Question = db.questions;
 const QuestionSet = db.questionsets;
 const Employee = db.employees;

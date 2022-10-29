@@ -1,4 +1,4 @@
-// const controller = require("../controllers/survey.controller");
+const controller = require("../controllers/pendingsurvey.controller");
 const { authJwt } = require("../middleware");
 
 module.exports = function(app) {
@@ -11,14 +11,14 @@ module.exports = function(app) {
   });
 
   // app.get(
-  //   "/api/survey/:id",
+  //   "/api/pending-surveys/:id",
   //   [authJwt.verifyToken],
-  //   controller.getSurvey
+  //   controller.getPendingSurvey
   // );
 
   // app.post(
-  //   "/api/survey",
+  //   "/api/pending-surveys",
   //   [authJwt.verifyToken],
-  //   controller.createSurvey
+  //   controller.createPendingSurvey
   // );
 };

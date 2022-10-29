@@ -77,6 +77,13 @@ db.responses.belongsTo(db.questions, {
   }
 });
 
+db.employees.hasMany(db.responses);
+db.responses.belongsTo(db.employees, {
+  foreignKey: {
+    allowNull: false
+  }
+});
+
 db.questionsets.hasMany(db.responsesets);
 db.responsesets.belongsTo(db.questionsets, {
   foreignKey: {
