@@ -7,25 +7,35 @@ var bcrypt = require("bcryptjs");
 
 exports.signup = (req, res) => {
   // Save Employee to Database, will probably need to update this code, not sure how registration process will work
-  Employee.create({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
-      managerID: req.body.managerID,
-      employmentRole: req.body.employmentRole,
-      departmentID: req.body.departmentID,
-      password: bcrypt.hashSync(req.body.password, 8)
-    })
-    .then(user => {
-      res.send({
-        message: "Employee was registered successfully!"
+  Employee.findOne({
+    where: {
+      email: req.body.managerEmail
+    }
+  }).then(manager => {
+    if(manager){
+      console.log(manager.id)
+      Employee.create({
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        email: req.body.email,
+        managerId: manager.id,
+        employmentRole: req.body.employmentRole,
+        departmentID: req.body.departmentID,
+        password: bcrypt.hashSync(req.body.password, 8)
+      })
+      .then(user => {
+        res.send({
+          message: "Employee was registered successfully!"
+        });
+      })
+      .catch(err => {
+        res.status(500).send({
+          message: err.message
+        });
       });
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: err.message
-      });
-    });
+    }
+  })
+
 };
 
 exports.signin = (req, res) => {
