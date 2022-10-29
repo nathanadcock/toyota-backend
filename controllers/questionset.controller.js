@@ -49,19 +49,3 @@ exports.getQuestionSet = (req, res) => {
     });
   });
 };
-
-exports.createQuestionSet = (req, res) => {
-  QuestionSet.findOne({
-    attributes: ['id', '']
-  })
-  .then(user => {
-    res.send({
-      message: "Employee was registered successfully!"
-    });
-  })
-  .catch(err => {
-    res.status(500).send({
-      message: err.message
-    });
-  });
-};
