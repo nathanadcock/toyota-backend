@@ -5,6 +5,71 @@ const Survey = db.surveys;
 const ResponseSet = db.responsesets;
 const Resp = db.responses;
 const PendingSurvey = db.pendingsurveys;
+const Employee = db.employees;
+
+exports.getUsers = (req, res) => {
+  let employeeList = [];
+  Employee.findAll({
+      attributes: ['id', 'firstName', 'lastName', 'email', 'managerId', 'employeeRole'],
+      order: [
+        ["id", "ASC"]
+      ],
+    })
+    .then((employees) => {
+      for (let index = 0; index < employees.length; index++) {
+        let employee = employees[index].dataValues;
+        let employeeObj = {
+          id: employee.id,
+          firstName: employee.firstName,
+          lastName: employee.lastName,
+          email: employee.email,
+          managerId: employee.managerId,
+          employeeRole: employee.employeeRole,
+        }
+        employeeList.push(employeeObj);
+      }
+      res.status(200).send(employeeList);
+    })
+    .catch((error) => {
+      console.log(error);
+
+      const clientObject = {
+        status: "error",
+        message: "could not get all users",
+      };
+      res.status(500).send(clientObject);
+    });
+}
+
+exports.getUser = (req, res) => {
+  Employee.findOne({
+      attributes: ['id', 'firstName', 'lastName', 'email', 'managerId', 'employeeRole'],
+      where: {
+        id: req.params.id
+      },
+    })
+    .then((employee) => {
+      let employeeObj = {
+        id: employee.id,
+        firstName: employee.firstName,
+        lastName: employee.lastName,
+        email: employee.email,
+        managerId: employee.managerId,
+        employeeRole: employee.employeeRole,
+      }
+
+      res.status(200).send(employeeObj);
+    })
+    .catch((error) => {
+      console.log(error);
+
+      const clientObject = {
+        status: "error",
+        message: "could not get the user requested",
+      };
+      res.status(500).send(clientObject);
+    });
+}
 
 // fetch pending surveys for user
 exports.getUserPendingSurvey = (req, res) => {
@@ -12,10 +77,14 @@ exports.getUserPendingSurvey = (req, res) => {
   let pendingSurveyIds = [];
   // get pending surveys, if any, for user
   PendingSurvey.findAll({
-    attributes: ["id", "questionsetId"],
-    where: { employeeId: req.params.id },
-    order: [["id", "ASC"]],
-  })
+      attributes: ["id", "questionsetId"],
+      where: {
+        employeeId: req.params.id
+      },
+      order: [
+        ["id", "ASC"]
+      ],
+    })
     .then((pendingSurveys) => {
       // loop pushes all pending survey id's to array
       for (let index = 0; index < pendingSurveys.length; index++) {
@@ -25,18 +94,18 @@ exports.getUserPendingSurvey = (req, res) => {
       let questionSetId = pendingSurveys[0].dataValues.questionsetId;
       // get the questions that belong to the question set of the first pending survey
       return Question.findAll({
-        attributes: ["id","question", "value", "label", "questionsetId"],
-        include: [
-          {
-            attributes: ["id"],
-            model: QuestionSet,
-            where: {
-              id: questionSetId,
-            },
-            required: true,
+        attributes: ["id", "question", "value", "label", "questionsetId"],
+        include: [{
+          attributes: ["id"],
+          model: QuestionSet,
+          where: {
+            id: questionSetId,
           },
+          required: true,
+        }, ],
+        order: [
+          ["id", "ASC"]
         ],
-        order: [["id", "ASC"]],
       });
     })
     // this then() formats all of the questions and their values and labels, and puts it all in an array (questionSet)
@@ -51,9 +120,7 @@ exports.getUserPendingSurvey = (req, res) => {
 
         let innerLoopLength = questionReceived.value.length;
         for (
-          let indexInnerLoop = 0;
-          indexInnerLoop < innerLoopLength;
-          indexInnerLoop++
+          let indexInnerLoop = 0; indexInnerLoop < innerLoopLength; indexInnerLoop++
         ) {
           let optionsElement = {
             value: questionReceived.value[indexInnerLoop],
@@ -95,9 +162,9 @@ exports.createUserSurvey = (req, res) => {
   let pendingSurveyId = req.body.pendingSurveyId;
   // create the survey
   Survey.create({
-    employeeId: userId,
-    questionsetId: questionSetId,
-  })
+      employeeId: userId,
+      questionsetId: questionSetId,
+    })
     .then((completedSurvey) => {
       let surveyId = completedSurvey.dataValues.id;
       let questionSetId = completedSurvey.dataValues.questionsetId;
@@ -131,7 +198,9 @@ exports.createUserSurvey = (req, res) => {
     })
     .then(() => {
       return PendingSurvey.destroy({
-        where: { id: pendingSurveyId },
+        where: {
+          id: pendingSurveyId
+        },
       });
     })
     .then(() => {

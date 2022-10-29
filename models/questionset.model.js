@@ -10,7 +10,11 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: false,
       unique: true,
-    }
+    },
+    employmentRole: {
+      type: Sequelize.STRING,
+      allowNull: true,
+    },
   });
 
   return QuestionSet;

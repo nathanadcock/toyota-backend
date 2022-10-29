@@ -67,18 +67,15 @@ db.sequelize
       })
       .then(() => {
         Question.create({
-          employmentRole: "Manager",
           question: "You are motivated by your organization's values.",
           questionsetId: 1,
         });
         Question.create({
-          employmentRole: "Manager",
           question:
             "The leaders of your organization demonstrate that employees are essential to its success.",
           questionsetId: 1,
         });
         return Question.create({
-          employmentRole: "Manager",
           question:
             "You believe that your organization is able to reach its objectives.",
           questionsetId: 1,
@@ -92,19 +89,16 @@ db.sequelize
       })
       .then(() => {
         Question.create({
-          employmentRole: "Manager",
           question:
             "Your organization invest an amount of resources, people and efforts that measures up to its ambitions.",
           questionsetId: 2,
         });
         Question.create({
-          employmentRole: "Manager",
           question:
             "I am inspired by the purpose and mission of my organization.",
           questionsetId: 2,
         });
         return Question.create({
-          employmentRole: "Manager",
           question: "Your organization involved in its community.",
           questionsetId: 2,
         });

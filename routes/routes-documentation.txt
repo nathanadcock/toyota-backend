@@ -1,0 +1,23 @@
+/api/auth/signup                  : POST : creates a user
+/api/auth/signin                  : POST : gets a user and signs them in
+
+/api/managers/:id/report          : GET  : builds and fetches the requested report according to the managers priviledges
+
+/api/pending-surveys/:id          : GET  : gets the pending survey with the matching id
+/api/pending-surveys              : GET  : gets all of the pending surveys
+/api/pending-surveys              : POST : creates a new pending survey
+
+/api/question-sets/:id            : GET  : gets question set with matching id and its question
+/api/question-sets                : GET  : gets all questions sets and there questions
+/api/question-sets                : POST : creates a new question set with questions
+
+/api/themes/:id/question-sets/:id : GET  : gets the question set with the matching id that belongs to the matching theme (includes questions) NO THEME DATA INCLUDED
+/api/themes/:id/question-sets     : GET  : gets all question sets belonging to theme with matching id (includes question) NO THEME DATA INCLUDED
+/api/themes/:id                   : GET  : gets theme with matching id
+/api/themes                       : GET  : gets all themes
+/api/themes                       : POST : creates a new theme
+
+/api/users/:id/pending-surveys    : GET  : gets pending surveys that belong to user with matching id
+/api/users/:id                    : GET  : gets user with matching id
+/api/users                        : GET  : gets all users
+/api/users/:id/surveys            : POST : submits and creates a completed survey after user has finished taking it

@@ -9,10 +9,6 @@ module.exports = (sequelize, Sequelize) => {
         primaryKey: true,
         autoIncrement: true
       },
-      employmentRole: {
-        type: Sequelize.STRING,
-        allowNull: false
-      },
       question: {
         type: Sequelize.STRING,
         allowNull: false
@@ -27,7 +23,6 @@ module.exports = (sequelize, Sequelize) => {
         defaultValue: ['Strongly Disagree', 'Slightly Disagree', 'Slightly Agree', 'Strongly Agree'],
         allowNull: false
       }
-
     });
 
     return Question;

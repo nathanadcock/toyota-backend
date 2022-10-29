@@ -1,12 +1,3 @@
-const db = require("../models");
-const Employee = db.employees;
-const QuestionSet = db.questionsets;
-const Question = db.questions;
-const Resp = db.responses;
-const ResponseSet = db.responsesets;
-const Survey = db.surveys;
-const Theme = db.themes;
-
 /*
     DO NOT DELETE THE COMMENTED OUT SECTION BELOW
     THE CODE STILL MIGHT BE USEFUL

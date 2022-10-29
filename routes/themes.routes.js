@@ -1,5 +1,5 @@
 const { authJwt } = require("../middleware");
-const controller = require("../controllers/user.controller");
+const controller = require("../controllers/theme.controller");
 
 module.exports = function(app) {
   app.use(function(req, res, next) {
@@ -11,26 +11,32 @@ module.exports = function(app) {
   });
 
   app.get(
-    "/api/users/:id/pending-surveys",
+    "/api/themes",
     [authJwt.verifyToken],
-    controller.getUserPendingSurvey,
+    controller.getThemes,
   );
 
   app.get(
-    "/api/users/:id",
+    "/api/themes/:id",
     [authJwt.verifyToken],
-    controller.getUser,
+    controller.getTheme,
   );
 
   app.get(
-    "/api/users",
+    "/api/themes/:id/question-sets",
     [authJwt.verifyToken],
-    controller.getUsers,
+    controller.getThemeQuestionSets,
+  );
+
+  app.get(
+    "/api/themes/:id/question-sets/:id",
+    [authJwt.verifyToken],
+    controller.getThemeQuestionSet,
   );
 
   app.post(
-    "/api/users/:id/surveys",
+    "/api/themes",
     [authJwt.verifyToken],
-    controller.createUserSurvey,
+    controller.createTheme,
   );
 };
