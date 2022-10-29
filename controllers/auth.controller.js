@@ -2,8 +2,6 @@ const db = require("../models");
 const config = require("../config/auth.config");
 const Employee = db.employees;
 
-const Op = db.Sequelize.Op;
-
 var jwt = require("jsonwebtoken");
 var bcrypt = require("bcryptjs");
 
@@ -31,7 +29,6 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
-  //console.log(req.body)
   Employee.findOne({
       where: {
         email: req.body.email

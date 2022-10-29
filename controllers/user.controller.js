@@ -145,7 +145,7 @@ exports.createUserSurvey = (req, res) => {
       console.log(error);
 
       const clientObject = {
-        status: "success",
+        status: "error",
         message: "error occurred when trying to submit survey results",
       };
       res.status(500).send(clientObject);

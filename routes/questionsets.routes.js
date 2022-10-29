@@ -10,11 +10,17 @@ module.exports = function(app) {
     next();
   });
 
-  // app.get(
-  //   "/api/question-sets/:id",
-  //   [authJwt.verifyToken],
-  //   controller.getQuestionSet,
-  // );
+  app.get(
+    "/api/question-sets",
+    [authJwt.verifyToken],
+    controller.getQuestionSets,
+  );
+
+  app.get(
+    "/api/question-sets/:id",
+    [authJwt.verifyToken],
+    controller.getQuestionSet,
+  );
 
   app.post(
     "/api/question-sets",

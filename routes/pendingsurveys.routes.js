@@ -10,15 +10,21 @@ module.exports = function(app) {
     next();
   });
 
-  // app.get(
-  //   "/api/pending-surveys/:id",
-  //   [authJwt.verifyToken],
-  //   controller.getPendingSurvey
-  // );
+  app.get(
+    "/api/pending-surveys",
+    [authJwt.verifyToken],
+    controller.getPendingSurveys
+  );
 
-  // app.post(
-  //   "/api/pending-surveys",
-  //   [authJwt.verifyToken],
-  //   controller.createPendingSurvey
-  // );
+  app.get(
+    "/api/pending-surveys/:id",
+    [authJwt.verifyToken],
+    controller.getPendingSurvey
+  );
+
+  app.post(
+    "/api/pending-surveys",
+    [authJwt.verifyToken],
+    controller.createPendingSurvey
+  );
 };

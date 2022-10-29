@@ -1,211 +1,91 @@
-// const db = require("../models");
-// const Employee = db.employees;
-// const QuestionSet = db.questionsets;
-// const Question = db.questions;
-// const Survey = db.surveys;
-// const ResponseSet = db.responsesets;
-// const Resp = db.responses;
-// const PendingSurvey = db.pendingsurveys;
+const db = require("../models");
+const Employee = db.employees;
+const QuestionSet = db.questionsets;
+const Question = db.questions;
+const Survey = db.surveys;
+const ResponseSet = db.responsesets;
+const Resp = db.responses;
+const PendingSurvey = db.pendingsurveys;
 
-// const Op = db.Sequelize.Op;
+const Op = db.Sequelize.Op;
 
-// // fetch pending surveys for user
-// exports.getPendingSurvey = (req, res) => {
+// fetch pending survey based on id
+exports.getPendingSurvey = (req, res) => {
 
-//   // get pending survey, if any, for user
-//   PendingSurvey.findOne({
-//       attributes: ['id', 'questionsetId'],
-//       where: {employeeId: req.params.id},
-//       order: [
-//         ['id', 'ASC']
-//       ],
-//     })
-//     .then((pendingSurvey) => {
-//       // get question set id associated with the pending survey
-//       let questionSetId = pendingSurvey.dataValues.id;
-//       // get the questions that belong to the question set
-//       return Question.findAll({
-//         attributes: ['question', 'value', 'label'],
-//         include: [{
-//           attributes: ['id'],
-//           model: QuestionSet,
-//           where: {
-//             id: questionSetId
-//           },
-//           required: true
-//         }],
-//         order: [
-//           ['id', 'ASC']
-//         ],
-//       })
-//     })
-//     // this then() formats all of the questions and their values and labels, and puts it all in an array (questionSet) and sends the array to the client
-//     .then((questions) => {
-//       let questionSet = [];
-//       for (let index = 0; index < questions.length; index++) {
-//         let questionReceived = questions[index].dataValues;
-//         let optionsArr = [];
+  // get pending survey
+  PendingSurvey.findOne({
+      attributes: ['id', 'questionsetId', 'employeeId'],
+      where: {employeeId: req.params.id},
+      order: [
+        ['id', 'ASC']
+      ],
+    })
+    .then((pendingSurvey) => {
+      // get pending survey attributes
+      let id = pendingSurvey.dataValues.id;
+      let questionSetId = pendingSurvey.dataValues.questionsetId;
+      let employeeId = pendingSurvey.dataValues.employeeId;
 
-//         let innerLoopLength = questionReceived.value.length;
-//         for (let indexInnerLoop = 0; indexInnerLoop < innerLoopLength; indexInnerLoop++) {
-//           let optionsElement = {
-//             value: questionReceived.value[indexInnerLoop],
-//             label: questionReceived.label[indexInnerLoop]
-//           };
-//           optionsArr.push(optionsElement);
-//         }
-//         questionSet.push({
-//           question: questionReceived.question,
-//           options: optionsArr
-//         });
-//       }
-//       res.status(200).send(questionSet);
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     })
-// };
+      const pendSurveyObj = {
+        id: id,
+        questionSetId: questionSetId,
+        employeeId, employeeId,
+      }
+      res.status(200).send(pendSurveyObj);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+};
 
-// // fetch pending survey for user
-// exports.fetchQuestionSet = (req, res) => {
+// fetch all pending surveys
+exports.getPendingSurveys = (req, res) => {
 
-//   // get pending survey, if any, for user
-//   PendingSurvey.findOne({
-//       attributes: ['id', 'questionsetId'],
-//       where: {employeeId: req.params.id},
-//       order: [
-//         ['id', 'ASC']
-//       ],
-//     })
-//     .then((pendingSurvey) => {
-//       // get question set id associated with the pending survey
-//       let questionSetId = pendingSurvey.dataValues.id;
-//       // get the questions that belong to the question set
-//       return Question.findAll({
-//         attributes: ['question', 'value', 'label'],
-//         include: [{
-//           attributes: ['id'],
-//           model: QuestionSet,
-//           where: {
-//             id: questionSetId
-//           },
-//           required: true
-//         }],
-//         order: [
-//           ['id', 'ASC']
-//         ],
-//       })
-//     })
-//     // this then() formats all of the questions and their values and labels, and puts it all in an array (questionSet) and sends the array to the client
-//     .then((questions) => {
-//       let questionSet = [];
-//       for (let index = 0; index < questions.length; index++) {
-//         let questionReceived = questions[index].dataValues;
-//         let optionsArr = [];
+  // get all pending surveys
+  PendingSurvey.findAll({
+      attributes: ['id', 'questionsetId', 'employeeId'],
+      order: [
+        ['id', 'ASC']
+      ],
+    })
+    .then((pendingSurveys) => {
+      let pendingSurveyList = [];
+      for(let index = 0; index < pendingSurveys.length; index++) {
+        // get pending survey attributes
+        let id = pendingSurvey.dataValues.id;
+        let questionSetId = pendingSurvey.dataValues.questionsetId;
+        let employeeId = pendingSurvey.dataValues.employeeId;
 
-//         let innerLoopLength = questionReceived.value.length;
-//         for (let indexInnerLoop = 0; indexInnerLoop < innerLoopLength; indexInnerLoop++) {
-//           let optionsElement = {
-//             value: questionReceived.value[indexInnerLoop],
-//             label: questionReceived.label[indexInnerLoop]
-//           };
-//           optionsArr.push(optionsElement);
-//         }
-//         questionSet.push({
-//           question: questionReceived.question,
-//           options: optionsArr
-//         });
-//       }
-//       res.status(200).send(questionSet);
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     })
-// };
+        const pendSurveyObj = {
+          id: id,
+          questionSetId: questionSetId,
+          employeeId, employeeId,
+        }
+        pendingSurveyList.push(pendSurveyObj);
+      }
+      res.status(200).send(pendingSurveyList);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+};
 
-// // store the results of a completed survey
-// exports.storeSurveyResults = (req, res) => {
-//   let userId = req.body.userId;
-//   let responseSetId;
-
-//   // get completed question set
-//   PendingSurvey.findOne({
-//     attributes: ['id', 'questionsetId'],
-//     where: {employeeId: userId},
-//     order: [
-//       ['id', 'ASC']
-//     ],
-//   })
-//     .then((pendingSurvey) => {
-//       // get question set id
-//       req.pendingSurveyId = pendingSurvey.dataValues.id;
-//       let questionSetId = pendingSurvey.dataValues.questionsetId;
-//       // create the survey
-//       return Survey.create({
-//         employeeId: userId,
-//         questionsetId: questionSetId,
-//       })
-//     })
-//     .then((completedSurvey) => {
-//       let surveyId = completedSurvey.dataValues.id;
-//       let questionSetId = completedSurvey.dataValues.questionsetId;
-//       // create the response set
-//       return ResponseSet.create({
-//         questionsetId: questionSetId,
-//         surveyId: surveyId,
-//       })
-//     })
-//     .then((responseSet) => {
-//       responseSetId = responseSet.dataValues.id;
-//       // find questions associated with responses
-//       return Question.findAll({
-//         attributes: ['id'],
-//         include: [{
-//           attributes: ['id'],
-//           model: QuestionSet,
-//           where: {
-//             id: responseSet.dataValues.questionsetId
-//           },
-//           required: true
-//         }],
-//         order: [
-//           ['id', 'ASC']
-//         ],
-//       })
-//     })
-//     .then((questions) => {
-//       // loop through responses and store them in database
-//       let promiseList = [];
-//       let anonymous = req.body.anonymous;
-//       for (let index = 0; index < questions.length; index++) {
-//         let questionReceived = questions[index].dataValues;
-//         let questionId = questionReceived.id;
-//         let response = req.body.userResponses[index].selectedOptionValue;
-//         let optionalResponse = req.body.userResponses[index].userInputText;
-
-//         let promise = Resp.create({
-//           response: response,
-//           optResponse: optionalResponse,
-//           anonymous: anonymous,
-//           responsesetId: responseSetId,
-//           questionId: questionId,
-//         })
-//         promiseList.push(promise);
-//       }
-
-//       return Promise.all(promiseList);
-//     })
-//     .then(() => {
-//       return PendingSurvey.destroy({
-//         where: {id: req.pendingSurveyId},
-//       })
-//     })
-//     .then(() => {
-//       res.status(200).send({
-//         message: 'success',
-//       });
-//     })
-//     .catch((error) => {
-//       console.log(error);
-//     })
-// };
+// create pending survey for user
+exports.createPendingSurvey = (req, res) => {
+  // create pending survey
+  PendingSurvey.create({
+      id: req.params.id,
+      questionsetId: req.params.questionSetId,
+      employeeId: req.params.employeeId,
+    })
+    .then((pendingSurvey) => {
+      const clientObject = {
+        status: "success",
+        data: null,
+      };
+      res.status(200).send(clientObject);
+    })
+    .catch((error) => {
+      console.log(error);
+    })
+};
