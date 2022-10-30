@@ -7,7 +7,7 @@
 /api/pending-surveys              : GET  : gets all of the pending surveys
 /api/pending-surveys              : POST : creates a new pending survey
 
-/api/question-sets/:id            : GET  : gets question set with matching id and its question
+/api/question-sets/:id            : GET  : gets question set with matching id and its questions
 /api/question-sets                : GET  : gets all questions sets and there questions
 /api/question-sets                : POST : creates a new question set with questions
 
