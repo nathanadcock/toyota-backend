@@ -14,7 +14,7 @@ exports.getQuestionSets = (req, res) => {
     .then((questionSets) => {
       let promiseList = [];
       for (let index = 0; index < questionSets.length; index++) {
-        let questionSetReceived = questionSets[index].dataVaulues;
+        let questionSetReceived = questionSets[index].dataValues;
         let questionSetObj = {
           id: questionSetReceived.id,
           name: questionSetReceived.name,
@@ -35,8 +35,9 @@ exports.getQuestionSets = (req, res) => {
       return Promise.all(promiseList);
     })
     .then((questions) => {
+      console.log(questions[0].dataValues)
       for (let index = 0; index < questions.length; index++) {
-        let questionReceived = questions[index].dataVaulues;
+        let questionReceived = questions[index].dataValues;
         let optionsArr = [];
 
         let loopLength = questionReceived.value.length;
@@ -57,6 +58,8 @@ exports.getQuestionSets = (req, res) => {
       res.status(200).send(questionSetList);
     })
     .catch(err => {
+      console.log(err);
+
       res.status(500).send({
         message: err.message
       });
@@ -88,7 +91,7 @@ exports.getQuestionSet = (req, res) => {
     })
     .then((questions) => {
       for (let index = 0; index < questions.length; index++) {
-        let questionReceived = questions[index].dataVaulues;
+        let questionReceived = questions[index].dataValues;
         let optionsArr = [];
 
         let loopLength = questionReceived.value.length;

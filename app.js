@@ -134,3 +134,6 @@ db.sequelize
         console.log(err.message);
       });
   });
+
+  const cron = require('./automation/email.automation');
+  cron.emailService();
