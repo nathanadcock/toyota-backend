@@ -7,10 +7,49 @@ const Resp = db.responses;
 const PendingSurvey = db.pendingsurveys;
 const Employee = db.employees;
 
+
+exports.updateUser = (req, res) => {
+  Employee.update(
+    {firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      managerId: req.body.managerId,
+      employmentRole: req.body.employmentRole
+    },
+    {where: {id: req.params.id}}
+  )
+  .then(user => {
+    res.send({
+      message: `Employee was updated successfully!`
+    });
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: err.message
+    });
+  });
+}
+
+exports.deleteUser = (req, res) => {
+  Employee.destroy(
+    {where: {id: req.params.id}}
+  )
+  .then(user => {
+    res.send({
+      message: `Employee was destroyed successfully!`
+    });
+  })
+  .catch(err => {
+    res.status(500).send({
+      message: err.message
+    });
+  });
+}
+
 exports.getUsers = (req, res) => {
   let employeeList = [];
   Employee.findAll({
-      attributes: ['id', 'firstName', 'lastName', 'email', 'managerId', 'employeeRole'],
+      attributes: ['id', 'firstName', 'lastName', 'email', 'managerId', 'employmentRole'],
       order: [
         ["id", "ASC"]
       ],
@@ -24,7 +63,7 @@ exports.getUsers = (req, res) => {
           lastName: employee.lastName,
           email: employee.email,
           managerId: employee.managerId,
-          employeeRole: employee.employeeRole,
+          employmentRole: employee.employmentRole,
         }
         employeeList.push(employeeObj);
       }
